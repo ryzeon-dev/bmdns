@@ -1,0 +1,8 @@
+[Unit]
+Description: Bare-Metal DNS
+
+[Service]
+ExecStart=/usr/local/bin/bare-metal-dns
+
+[Install]
+WantedBy=default.target
