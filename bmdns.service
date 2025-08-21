@@ -3,6 +3,7 @@ Description: Bare-Metal DNS
 
 [Service]
 ExecStart=/usr/local/bin/bare-metal-dns
+Restart=always
 
 [Install]
 WantedBy=default.target

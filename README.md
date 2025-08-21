@@ -82,3 +82,7 @@ BMDNS searches for an answer to a given query in the following order:
 - root server
 
  Useful note: static mappings are faster to search into than blocklist files 
+
+## Log
+BMDNS writes its log in the file `/usr/local/share/bmdns/bmdns.log`, which is created during the installation process. 
+The log is wiped at every restart of the service  
