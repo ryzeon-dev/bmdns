@@ -6,7 +6,7 @@ from DnsHeader import DnsHeader
 from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
 from utils import ipToBytes, u16ToBytes, decodeName
-
+from Logger import Logger
 
 class DNS:
     def __init__(self, conf):
@@ -15,8 +15,13 @@ class DNS:
         self.socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
         self.socket.setsockopt(sk.SOL_SOCKET, sk.SO_REUSEADDR, 1)
 
-        self.socket.bind((conf.host, conf.port))
+        try:
+            self.socket.bind((conf.host, conf.port))
+        except:
+            raise Exception(f'Cannot bind address "{self.conf.host}:{self.conf.port}"')
+
         self.cache = Cache()
+        self.logger = Logger()
 
     def listen(self):
         while True:
@@ -28,19 +33,24 @@ class DNS:
         question = DnsQuestion.fromBytes(bytes[12:])
 
         requestId = header.id
-        strRequestId = str(requestId).ljust(5
-                                            )
         qname = decodeName(question.qname, 0)
 
-        print(f'[!] {strRequestId} | {clientAddress} asks for {qname}')
+        strRequestId = str(requestId).ljust(5)
+        fmtClientAddress = f'{clientAddress[0]}:{clientAddress[1]}'
+
+        self.logger.alert(f'{strRequestId} | {fmtClientAddress} asks for {qname}')
 
         if responseBytes := self.cache.getFotId(qname, requestId):
-            print(f'[*] {strRequestId} | giving cached answer to {clientAddress} asking for {qname}')
-            self.socket.sendto(responseBytes, clientAddress)
+            self.loggerl.log(f'{strRequestId} | giving cached answer to {fmtClientAddress} asking for {qname}')
+            try:
+                self.socket.sendto(responseBytes, clientAddress)
+            except:
+                self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
+
             return
 
         if ip := self.conf.search(qname):
-            print(f'[*] {strRequestId} | giving static answer "{ip}" to {clientAddress} asking for {qname}')
+            self.logger.log(f'{strRequestId} | giving static answer "{ip}" to {fmtClientAddress} asking for {qname}')
             answer = DnsRecord()
 
             answer.name = b'\xc0\x0c'
@@ -60,7 +70,11 @@ class DNS:
             responseBytes += question.toBytes()
             responseBytes += answer.toBytes()
 
-            self.socket.sendto(responseBytes, clientAddress)
+            try:
+                self.socket.sendto(responseBytes, clientAddress)
+            except:
+                self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
+
             return
 
         for server in self.conf.rootServers:
@@ -69,20 +83,32 @@ class DNS:
             if responseBytes is None:
                 continue
 
-            print(f'[*] {strRequestId} | giving root server answer to {clientAddress} asking for {qname}')
+            self.logger.log(f'{strRequestId} | giving root server answer to {fmtClientAddress} asking for {qname}')
 
             responseBytes = u16ToBytes(requestId) + responseBytes[2:]
-            self.socket.sendto(responseBytes, clientAddress)
+
+            try:
+                self.socket.sendto(responseBytes, clientAddress)
+
+            except:
+                self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
+
             self.cache.append(responseBytes)
             return
 
-        print(f'[x] {strRequestId} | giving no answer to {clientAddress} asking for {qname}')
+        self.logger.error(f'{strRequestId} | giving no answer to {fmtClientAddress} asking for {qname}')
 
     def askRootServer(self, server, questionBytes):
         sock = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
         sock.settimeout(1)
 
-        sock.sendto(questionBytes, (server, 53))
+        try:
+            sock.sendto(questionBytes, (server, 53))
+
+        except:
+            self.logger.error(f'Error: could not reach "{server}" root server')
+            return
+
         try:
             responseBytes, address = sock.recvfrom(2048)
 
