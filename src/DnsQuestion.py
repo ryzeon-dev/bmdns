@@ -4,8 +4,8 @@ from utils import *
 class DnsQuestion:
     def __init__(self):
         self.qname = b''
-        self.qtype = 0
-        self.qclass = 0
+        self.qtype = 0 # u16
+        self.qclass = 0 # u16
 
         self.byteSize = 0
 

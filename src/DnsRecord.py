@@ -1,6 +1,5 @@
 from utils import *
 
-
 class DnsRecord:
     def __init__(self):
         self.name = b''

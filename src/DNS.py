@@ -1,7 +1,7 @@
 import socket as sk
 from _thread import start_new_thread
-from Cache import Cache
 
+from Cache import Cache
 from DnsHeader import DnsHeader
 from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
@@ -17,6 +17,7 @@ class DNS:
 
         try:
             self.socket.bind((conf.host, conf.port))
+
         except:
             raise Exception(f'Cannot bind address "{self.conf.host}:{self.conf.port}"')
 
@@ -40,8 +41,8 @@ class DNS:
 
         self.logger.alert(f'{strRequestId} | {fmtClientAddress} asks for {qname}')
 
-        if responseBytes := self.cache.getFotId(qname, requestId):
-            self.loggerl.log(f'{strRequestId} | giving cached answer to {fmtClientAddress} asking for {qname}')
+        if responseBytes := self.cache.getForId(qname, requestId):
+            self.logger.log(f'{strRequestId} | giving cached answer to {fmtClientAddress} asking for {qname}')
             try:
                 self.socket.sendto(responseBytes, clientAddress)
             except:

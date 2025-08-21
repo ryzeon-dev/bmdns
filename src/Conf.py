@@ -2,7 +2,7 @@ import yaml
 import re
 
 class Conf:
-    def __init__(self, confPath):
+    def __init__(self, confPath: str):
         self.confPath = confPath
         self.remaps = {}
 
@@ -26,7 +26,7 @@ class Conf:
 
             self.__parseAdlist(filePath)
 
-    def __parseAdlist(self, filePath):
+    def __parseAdlist(self, filePath: str):
         with open(filePath, 'r') as file:
             content = file.read()
 
@@ -42,7 +42,7 @@ class Conf:
 
             self.remaps[hostnameRegex] = ip
 
-    def search(self, target):
+    def search(self, target: str) -> str|None:
         ip = self.static.get(target)
         if ip is not None:
             return ip

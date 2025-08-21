@@ -15,11 +15,11 @@ class DnsResponse:
         self.qname = self.question.qname
         self.insertionTime = time.time()
 
-    def __isValid(self):
+    def _isValid(self):
         return time.time() < (self.insertionTime + self.ttl)
 
     def packForId(self, id):
-        if not self.__isValid():
+        if not self._isValid():
             return None
 
         bytes = u16ToBytes(id) + self.fullBytes[2:]
