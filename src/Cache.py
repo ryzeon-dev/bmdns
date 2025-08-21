@@ -1,14 +1,16 @@
 from DnsResponse import DnsResponse
 from utils import decodeName
-from threading import Semaphore, Timer
+from threading import Semaphore, Thread
+
+import time
 
 class Cache:
     def __init__(self):
         self.__mutex = Semaphore(1)
         self.__cache = {}
 
-        self.timer = Timer(120, self._flush, ())
-        self.timer.start()
+        self.flushThread = Thread(target=self._flush, args=())
+        self.flushThread.start()
 
     def append(self, bytes):
         if not bytes:
@@ -20,7 +22,7 @@ class Cache:
         except:
             return
 
-        if response.ttl == 0:
+        if response.ttl == 0 or response.question.qtype != 1:
             return
 
         qname = decodeName(response.qname, 0)
@@ -28,6 +30,8 @@ class Cache:
 
         self.__cache[qname] = response
         self.__mutex.release()
+
+        # print(self.__cache)
 
     def getForId(self, qname, id):
         self.__mutex.acquire()
@@ -49,10 +53,13 @@ class Cache:
 
     def _flush(self):
         self.__mutex.acquire()
+        cacheItems = list(self.__cache.items())
 
-        for qname, dnsResponse in self.__cache.items():
+        for qname, dnsResponse in cacheItems:
             if not dnsResponse._isValid():
-                self.__cache.pop(qname)
+                try: self.__cache.pop(qname)
+                except: pass
 
         self.__mutex.release()
-        self.timer.run()
+        time.sleep(120)
+        self._flush()

@@ -1,5 +1,5 @@
 # Bare-Metal DNS
-Simple DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
+Simple IPv4-only DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
 
 ## Warning
 The software has only been tested on GNU/Linux, at the moment. Its behaviour is unknown on other Operative Systems (it is expected to work just fine on BSD distributions).

@@ -22,5 +22,7 @@ class DnsResponse:
         if not self._isValid():
             return None
 
-        bytes = u16ToBytes(id) + self.fullBytes[2:]
-        return bytes
+        return u16ToBytes(id) + self.fullBytes[2:]
+
+    def __repr__(self):
+        return f'DnsResponse(qname: {self.qname}, ttl: {self.ttl}, remaining: {(self.insertionTime + self.ttl) - time.time()})'
