@@ -58,7 +58,7 @@ class DNS:
             answer.type = question.qtype
 
             answer.class_ = question.qclass
-            answer.ttl = 65536
+            answer.ttl = (2**32) - 1
 
             answer.dataSize = 4
             answer.data = ipToBytes(ip)
@@ -71,11 +71,13 @@ class DNS:
             responseBytes += question.toBytes()
             responseBytes += answer.toBytes()
 
+
             try:
                 self.socket.sendto(responseBytes, clientAddress)
             except:
                 self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
+            self.cache.append(responseBytes)
             return
 
         for server in self.conf.rootServers:
