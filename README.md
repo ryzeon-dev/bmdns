@@ -1,7 +1,8 @@
 # Bare-Metal DNS
 Simple DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
 
-The software has only been tested on GNU/Linux, at the moment. Its behaviour is unknown on other OS
+## Warning
+The software has only been tested on GNU/Linux, at the moment. Its behaviour is unknown on other Operative Systems (it is expected to work just fine on BSD distributions).
 
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed 
@@ -37,7 +38,7 @@ blocklists:
   -
 ```
 
-### Static
+### Static remaps
 To add a personalized dns resolution, add the hostname with its ip address to `static` section
 
 e.g. you have a server named `my-server` with ip address `192.168.0.2`
