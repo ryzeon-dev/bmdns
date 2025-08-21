@@ -7,7 +7,7 @@ class Cache:
         self.__mutex = Semaphore(1)
         self.__cache = {}
 
-        self.timer = Timer(5, self._flush, ())
+        self.timer = Timer(120, self._flush, ())
         self.timer.start()
 
     def append(self, bytes):
