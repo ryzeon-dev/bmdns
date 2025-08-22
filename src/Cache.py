@@ -4,6 +4,8 @@ from threading import Semaphore, Thread
 
 import time
 
+FLUSH_TIMEOUT = 120
+
 class Cache:
     def __init__(self):
         self.__mutex = Semaphore(1)
@@ -30,8 +32,6 @@ class Cache:
 
         self.__cache[qname] = response
         self.__mutex.release()
-
-        # print(self.__cache)
 
     def getForId(self, qname, id):
         self.__mutex.acquire()
@@ -61,5 +61,5 @@ class Cache:
                 except: pass
 
         self.__mutex.release()
-        time.sleep(120)
+        time.sleep(FLUSH_TIMEOUT)
         self._flush()

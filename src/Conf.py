@@ -60,9 +60,3 @@ class Conf:
         for pattern, ip in self.remaps.items():
             if re.match(pattern, target):
                 return ip
-
-if __name__ == '__main__':
-    conf = Conf('./conf.yaml', ['adlist.txt'])
-
-    print(conf.remaps)
-    print(conf.search('www.google.com'))

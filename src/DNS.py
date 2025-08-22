@@ -11,6 +11,12 @@ from Logger import Logger
 QUESTIONTYPE_A = 1
 QUESTIONTYPE_AAAA = 28
 
+MAX_TTL = (2**32) - 1
+RCODE_SERVER_REFUSAL = 5
+HEADER_BYTE_SIZE = 12
+
+RECV_SIZE = 2048
+
 class DNS:
     def __init__(self, conf):
         self.conf = conf
@@ -29,12 +35,12 @@ class DNS:
 
     def listen(self):
         while True:
-            bytes, clientAddress = self.socket.recvfrom(2048)
+            bytes, clientAddress = self.socket.recvfrom(RECV_SIZE)
             start_new_thread(self.handler, (bytes, clientAddress))
 
     def handler(self, bytes, clientAddress):
         header = DnsHeader.fromBytes(bytes)
-        question = DnsQuestion.fromBytes(bytes[12:])
+        question = DnsQuestion.fromBytes(bytes[HEADER_BYTE_SIZE:])
 
         requestId = header.id
         qname = decodeName(question.qname, 0)
@@ -49,7 +55,8 @@ class DNS:
             errorHeader = DnsHeader()
             errorHeader.id = header.id
 
-            errorHeader.rcode = 5 # server refuses to answer
+            errorHeader.qr = 1
+            errorHeader.rcode = RCODE_SERVER_REFUSAL
 
             errorHeader.questionsCount = 0
             errorHeader.answersCount = 0
@@ -81,19 +88,21 @@ class DNS:
                 self.logger.log(f'{strRequestId} | giving static answer "{ip}" to {fmtClientAddress} asking for {qname}')
                 answer = DnsRecord()
 
+                # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
                 answer.name = b'\xc0\x0c'
-                answer.type = question.qtype
+                answer.type = QUESTIONTYPE_A
 
                 answer.class_ = question.qclass
-                answer.ttl = (2**32) - 1
+                answer.ttl = MAX_TTL
 
+                # byte size for IPv4 address
                 answer.dataSize = 4
                 answer.data = ipToBytes(ip)
 
                 header.answersCount = 1
-                header.qr = 1
-                responseBytes = b''
+                header.qr = 1 # when set to 1 means answer
 
+                responseBytes = b''
                 responseBytes += header.toBytes()
                 responseBytes += question.toBytes()
                 responseBytes += answer.toBytes()
@@ -139,7 +148,7 @@ class DNS:
             return
 
         try:
-            responseBytes, address = sock.recvfrom(2048)
+            responseBytes, address = sock.recvfrom(RECV_SIZE)
 
         except:
             return None

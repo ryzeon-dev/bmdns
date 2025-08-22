@@ -1,4 +1,5 @@
 import time
+
 LOG_FILE = '/usr/local/share/bmdns/bmdns.log'
 
 class Logger:

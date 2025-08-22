@@ -43,12 +43,13 @@ def getNameBytes(bytes):
     index = 0
     firstSize = bytes[index]
 
+    # 0b11000000 = 0xC0 = 192 pointer signaler in byte stream
     if firstSize & 0b11000000:
         name = bytes[index:index + 2]
 
     else:
         nameLength = 0
-        while (byte := bytes[index + nameLength]) != 0:
+        while bytes[index + nameLength] != 0:
             nameLength += 1
         nameLength += 1
 

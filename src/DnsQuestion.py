@@ -1,4 +1,3 @@
-import struct
 from utils import *
 
 class DnsQuestion:
