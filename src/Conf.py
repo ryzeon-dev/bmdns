@@ -47,6 +47,16 @@ class Conf:
         if ip is not None:
             return ip
 
+        # some programs add `.localhost` when not TLD is provided
+        ip = self.static.get(target.removesuffix('.localhost'))
+        if ip is not None:
+            return ip
+
+        # some programs add `.local` when not TLD is provided
+        ip  = self.static.get(target.removesuffix('.local'))
+        if ip is not None:
+            return ip
+
         for pattern, ip in self.remaps.items():
             if re.match(pattern, target):
                 return ip
