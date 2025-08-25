@@ -1,10 +1,9 @@
 from DnsResponse import DnsResponse
 from utils import decodeName
+from constants import *
+
 from threading import Semaphore, Thread
-
 import time
-
-FLUSH_TIMEOUT = 120
 
 class Cache:
     def __init__(self):
@@ -24,7 +23,9 @@ class Cache:
         except Exception as e:
             return
 
-        if response.ttl == 0 or (response.question.qtype != 1 and response.question.qtype != 5):
+        if response.ttl == 0 or (
+            response.question.qtype != QUESTIONTYPE_A and response.question.qtype != QUESTIONTYPE_CNAME
+        ):
             return
 
         qname = decodeName(response.qname, 0)

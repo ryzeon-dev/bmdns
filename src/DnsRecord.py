@@ -3,10 +3,10 @@ from utils import *
 class DnsRecord:
     def __init__(self):
         self.name = b''
-        self.type = 0 # u16
-        self.class_ = 0 # u16
-        self.ttl = 0 # u32
-        self.dataSize = 0 # u16
+        self.type = 0       # u16
+        self.class_ = 0     # u16
+        self.ttl = 0        # u32
+        self.dataSize = 0   # u16
         self.data = b''
 
         self.byteSize = 0

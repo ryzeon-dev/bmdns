@@ -7,16 +7,7 @@ from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
 from utils import ipToBytes, u16ToBytes, decodeName
 from Logger import Logger
-
-QUESTIONTYPE_A = 1
-QUESTIONTYPE_AAAA = 28
-QUESTIONTYPE_CNAME = 5
-
-MAX_TTL = (2**32) - 1
-RCODE_SERVER_REFUSAL = 5
-HEADER_BYTE_SIZE = 12
-
-RECV_SIZE = 2048
+from constants import *
 
 class DNS:
     def __init__(self, conf):
@@ -48,6 +39,7 @@ class DNS:
         qname = decodeName(question.qname, 0)
         qtype = question.qtype
 
+        # logging variables
         strRequestId = str(requestId).ljust(5)
         fmtClientAddress = f'{clientAddress[0]}:{clientAddress[1]}'
 
@@ -57,7 +49,7 @@ class DNS:
             errorHeader = DnsHeader()
             errorHeader.id = header.id
 
-            errorHeader.qr = 1
+            errorHeader.qr = QR_RESPONSE
             errorHeader.rcode = RCODE_SERVER_REFUSAL
 
             errorHeader.questionsCount = 0
@@ -91,18 +83,18 @@ class DNS:
                 answer = DnsRecord()
 
                 # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
-                answer.name = b'\xc0\x0c'
+                answer.name = QNAME_STD_POINTER
                 answer.type = QUESTIONTYPE_A
 
                 answer.class_ = question.qclass
                 answer.ttl = MAX_TTL
 
                 # byte size for IPv4 address
-                answer.dataSize = 4
+                answer.dataSize = IP_ADDRESS_BYTE_SIZE
                 answer.data = ipToBytes(ip)
 
                 header.answersCount = 1
-                header.qr = 1 # when set to 1 means answer
+                header.qr = QR_RESPONSE
 
                 responseBytes = b''
                 responseBytes += header.toBytes()
@@ -161,7 +153,7 @@ class DNS:
         sock.settimeout(1)
 
         try:
-            sock.sendto(questionBytes, (server, 53))
+            sock.sendto(questionBytes, (server, STD_DNS_PORT))
 
         except:
             self.logger.error(f'Error: could not reach "{server}" root server')

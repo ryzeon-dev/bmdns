@@ -2,20 +2,21 @@ from utils import *
 
 class DnsHeader:
     def __init__(self):
-        self.id = 0 # u16
-        self.qr = 0 # u1
-        self.opcode = 0 # u4
-        self.flagAA = 0 # u1
-        self.flagTC = 0 # u1
-        self.flagRD = 0 # u1
-        self.flagRA = 0 # u1
-        self.Z = 0 # u3
-        self.rcode = 0 # u4
-        self.questionsCount = 0 #u16
-        self.answersCount = 0 # u16
-        self.nameServersCount = 0 # u16
-        self.additionalsCount = 0 # u16
+        self.id = 0                 # u16
+        self.qr = 0                 # u1
+        self.opcode = 0             # u4
+        self.flagAA = 0             # u1
+        self.flagTC = 0             # u1
+        self.flagRD = 0             # u1
+        self.flagRA = 0             # u1
+        self.Z = 0                  # u3
+        self.rcode = 0              # u4
+        self.questionsCount = 0     # u16
+        self.answersCount = 0       # u16
+        self.nameServersCount = 0   # u16
+        self.additionalsCount = 0   # u16
 
+        # const
         self.byteSize = 12
 
     @staticmethod

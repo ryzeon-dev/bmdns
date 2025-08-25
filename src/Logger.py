@@ -1,17 +1,18 @@
 import time
-
-LOG_FILE = '/usr/local/share/bmdns/bmdns.log'
+from constants import *
 
 class Logger:
     def __init__(self):
         self.__resetLogFile()
         self.__file = open(LOG_FILE, 'a')
 
-    def __resetLogFile(self):
+    @staticmethod
+    def __resetLogFile():
         with open(LOG_FILE, 'w') as file:
             file.write('')
 
-    def __fmtNow(self):
+    @staticmethod
+    def __fmtNow():
         now = time.localtime()
         return f'{now.tm_year}/{now.tm_mon}/{now.tm_mday} {now.tm_hour}:{now.tm_min}:{now.tm_sec}'
 
