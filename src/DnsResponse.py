@@ -10,9 +10,9 @@ class DnsResponse:
         self.fullBytes = bytes
         self.header = DnsHeader.fromBytes(bytes)
         self.question = DnsQuestion.fromBytes(bytes[self.header.byteSize:])
-        self.firstAnswer = DnsRecord.fromBytes(bytes[self.header.byteSize + self.question.byteSize:])
+        self.firstRecord = DnsRecord.fromBytes(bytes[self.header.byteSize + self.question.byteSize:])
 
-        self.ttl = self.firstAnswer.ttl
+        self.ttl = self.firstRecord.ttl
         self.qname = self.question.qname
         self.insertionTime = time.time()
 

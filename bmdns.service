@@ -1,5 +1,5 @@
 [Unit]
-Description: Bare-Metal DNS
+Description=Bare-Metal DNS
 
 [Service]
 ExecStart=/usr/local/bin/bare-metal-dns

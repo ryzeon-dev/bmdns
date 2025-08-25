@@ -21,10 +21,10 @@ class Cache:
         try:
             response = DnsResponse(bytes)
 
-        except:
+        except Exception as e:
             return
 
-        if response.ttl == 0 or response.question.qtype != 1:
+        if response.ttl == 0 or (response.question.qtype != 1 and response.question.qtype != 5):
             return
 
         qname = decodeName(response.qname, 0)
@@ -63,3 +63,6 @@ class Cache:
         self.__mutex.release()
         time.sleep(FLUSH_TIMEOUT)
         self._flush()
+
+    def __repr__(self):
+        return f'Cache({self.__cache})'

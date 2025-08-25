@@ -10,6 +10,7 @@ from Logger import Logger
 
 QUESTIONTYPE_A = 1
 QUESTIONTYPE_AAAA = 28
+QUESTIONTYPE_CNAME = 5
 
 MAX_TTL = (2**32) - 1
 RCODE_SERVER_REFUSAL = 5
@@ -31,6 +32,7 @@ class DNS:
             raise Exception(f'Cannot bind address "{self.conf.host}:{self.conf.port}"')
 
         self.cache = Cache()
+        self.cnameCache = Cache()
         self.logger = Logger()
 
     def listen(self):
@@ -115,6 +117,19 @@ class DNS:
                 self.cache.append(responseBytes)
                 return
 
+        elif qtype == QUESTIONTYPE_CNAME:
+            if responseBytes := self.cnameCache.getForId(qname, requestId):
+                self.logger.log(f'{strRequestId} | giving cached CNAME to {fmtClientAddress} asking for {qname}')
+
+                try:
+                    self.socket.sendto(responseBytes, clientAddress)
+
+                except:
+                    self.logger.error(f'{strRequestId} | Error: cannot send cnae response to {fmtClientAddress}')
+
+                return
+
+
         for server in self.conf.rootServers:
             responseBytes = self.askRootServer(server, bytes)
 
@@ -131,7 +146,12 @@ class DNS:
             except:
                 self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
-            self.cache.append(responseBytes)
+            if qtype == QUESTIONTYPE_A:
+                self.cache.append(responseBytes)
+
+            elif qtype == QUESTIONTYPE_CNAME:
+                self.cnameCache.append(responseBytes)
+
             return
 
         self.logger.error(f'{strRequestId} | giving no answer to {fmtClientAddress} asking for {qname}')

@@ -34,3 +34,6 @@ class DnsQuestion:
         bytes += u16ToBytes(self.qclass)
 
         return bytes
+
+    def __repr__(self):
+        return f'DnsQuestion(qname: {self.qname}, qtype: {self.qtype}, qclass: {self.qclass})'

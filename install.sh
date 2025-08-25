@@ -24,6 +24,7 @@ mkdir -p /usr/local/share/bmdns
 touch /usr/local/share/bmdns/bmdns.log
 
 cp ./sample_conf.yaml /etc/bmdns/conf.yaml
-systemctl enable $(pwd)/bmdns.service
+cp ./bmdns.service /etc/bmdns/bmdns.service
 
+systemctl enable /etc/bmdns/bmdns.service
 systemctl start bmdns.service
