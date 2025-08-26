@@ -87,7 +87,7 @@ class DNS:
                 answer.type = QUESTIONTYPE_A
 
                 answer.class_ = question.qclass
-                answer.ttl = MAX_TTL
+                answer.ttl = RECORD_MAX_TTL
 
                 # byte size for IPv4 address
                 answer.dataSize = IP_ADDRESS_BYTE_SIZE

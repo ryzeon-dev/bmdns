@@ -62,7 +62,7 @@ class Cache:
                 except: pass
 
         self.__mutex.release()
-        time.sleep(FLUSH_TIMEOUT)
+        time.sleep(CACHE_FLUSH_TIMEOUT)
         self._flush()
 
     def __repr__(self):
