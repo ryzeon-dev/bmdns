@@ -20,4 +20,5 @@ deactivate
 rm -rf build dist bare-metal-dns.spec venv
 
 cp ./bin/bare-metal-dns /usr/local/bin
+systemctl daemon-reload
 systemctl restart bmdns
