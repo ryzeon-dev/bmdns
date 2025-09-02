@@ -12,6 +12,7 @@ from constants import *
 class DNS:
     def __init__(self, conf):
         self.conf = conf
+        self.logger = Logger(self.conf.persistentLog)
 
         self.socket = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
         self.socket.setsockopt(sk.SOL_SOCKET, sk.SO_REUSEADDR, 1)
@@ -24,7 +25,7 @@ class DNS:
 
         self.cache = Cache()
         self.cnameCache = Cache()
-        self.logger = Logger()
+
 
     def listen(self):
         while True:

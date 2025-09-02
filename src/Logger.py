@@ -1,14 +1,21 @@
 import time
+import os
 from constants import *
 
 class Logger:
-    def __init__(self):
-        self.__resetLogFile()
-        self.__file = open(LOG_FILE, 'a')
+    def __init__(self, persistentLog=False):
+        if persistentLog:
+            fileName = 'bmdns_' + self.__fmtNow().replace(' ', '_').replace('/', '-').replace(':', '-') + '.log'
+            self.filePath = os.path.join(LOG_DIR, fileName)
 
-    @staticmethod
-    def __resetLogFile():
-        with open(LOG_FILE, 'w') as file:
+        else:
+            self.filePath = LOG_FILE
+
+        self.__resetLogFile()
+        self.__file = open(self.filePath, 'a')
+
+    def __resetLogFile(self):
+        with open(self.filePath, 'w') as file:
             file.write('')
 
     @staticmethod

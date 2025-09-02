@@ -18,6 +18,7 @@ class Conf:
         self.static = yconf['static']
         self.rootServers = yconf['root-servers']
         self.blocklists = yconf['blocklists']
+        self.persistentLog = yconf['persistent-log']
 
     def __parseAdlists(self):
         for filePath in self.blocklists:

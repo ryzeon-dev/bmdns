@@ -28,6 +28,8 @@ A sample configuration file is
 host: 0.0.0.0
 port: 53
 
+persistent-log: false
+
 static:
   me.local: 0.0.0.0
 
@@ -85,5 +87,7 @@ BMDNS searches for an answer to a given query in the following order:
 Useful note: static mappings are faster to search into than blocklist files 
 
 ## Log
-BMDNS writes its log in the file `/usr/local/share/bmdns/bmdns.log`, which is created during the installation process. 
+If log-persistency is set to `false`, BMDNS writes its log in the file `/usr/local/share/bmdns/bmdns.log`, which is created during the installation process. 
 The log is wiped at every restart of the service  
+
+If log-persistency is set to `true`, BMDNS will create a new file at every restart of the service, naming it `bmdns_[$date]_[$time].log`.

@@ -1,3 +1,4 @@
+LOG_DIR = '/usr/local/share/bmdns'
 LOG_FILE = '/usr/local/share/bmdns/bmdns.log'
 
 CACHE_FLUSH_TIMEOUT = 120
