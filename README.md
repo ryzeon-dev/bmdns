@@ -42,19 +42,45 @@ blocklists:
 ```
 
 ### Static remaps
-To add a personalized dns resolution, add the hostname with its ip address to `static` section
+To add a personalized dns resolution, add the hostname with its ip address to `static` section. 
 
 e.g. you have a server named `my-server` with ip address `192.168.0.2`
 ```yaml
 static:
   my-server: 192.168.0.2
 ```
+<br/> 
+<br/>
+
+
+BMDNS's static remaps support vlans. This way a single DNS server can be used for multiple vlans (provided that the host has the ability to access all of them).
+When using vlans, only the requestant whose address belongs to a certain vlan may access its static remaps.
+
+e.g. you have two vlans (with addresses `192.168.0.0` and `192.168.1.0`), and you have a server that lives on both named `my-server` with ip addresses (respectively) `192.168.0.2` and `192.168.1.2` 
+```yaml 
+static:
+  me.local: 0.0.0.0
+  
+  _vlan0: 
+    __vlanmask: 192.168.0.0/24
+    my-server: 192.168.0.2
+
+  _vlan1:
+    __vlanmask: 192.168.1.0/24
+    my-server: 192.168.1.2
+```
+When creating a vlan space, a certain syntax is required:
+- a vlan name must start with `_vlan`, which tells the configuration parser to create a new vlan static space
+- inside the just created vlan object, create an object named `__vlanmask` with `<ip-address>/<cidr>` as value
+  - if no `cidr` is specified, `24` is assumed
+- then follow with the static remaps
+
 
 ### Root Servers
 At least one root server is required for BMDNS to work properly. \
 Root servers are queried when BMDNS doesn't have the answer in its cache or in the static mapping
 
-e.g. you want to use AdGuard as DNS root servers
+e.g. you want to use AdGuard as DNS root server
 ```yaml
 root-servers:
   - 94.140.14.14
@@ -80,6 +106,7 @@ blocklists:
 ## Cascading search
 BMDNS searches for an answer to a given query in the following order:
 - internal cache
+  - internal cache is used for both IPv4 and CNAME queries 
 - static mappings
 - blocklist files
 - root server

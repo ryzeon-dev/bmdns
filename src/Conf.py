@@ -1,12 +1,15 @@
 import yaml
 import re
+from StaticVlan import StaticVlan
 
 class Conf:
     def __init__(self, confPath: str):
         self.confPath = confPath
         self.remaps = {}
+        self.staticVlans = []
 
         self.__parseConf()
+        self.__parseStatic()
         self.__parseAdlists()
 
     def __parseConf(self):
@@ -15,10 +18,17 @@ class Conf:
 
         self.host = yconf['host']
         self.port = yconf['port']
-        self.static = yconf['static']
+        self.static: dict = yconf['static']
         self.rootServers = yconf['root-servers']
         self.blocklists = yconf['blocklists']
         self.persistentLog = yconf['persistent-log']
+
+    def __parseStatic(self):
+        keys = list(self.static.keys())
+
+        for key in keys:
+            if key.startswith('_vlan'):
+                self.staticVlans.append(StaticVlan(self.static.pop(key), key))
 
     def __parseAdlists(self):
         for filePath in self.blocklists:
