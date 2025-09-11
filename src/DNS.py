@@ -50,9 +50,14 @@ class DNS:
             answer.dataSize = IP_ADDRESS_BYTE_SIZE
             answer.data = ipToBytes(ip)
 
+            header.questionsCount = 1
+            header.nameServersCount = 0
+            header.additionalsCount = 0
+
             # only one response for statically assigned addresses
             header.answersCount = 1
             header.qr = QR_RESPONSE
+            header.flagRA = True # required by some clients
 
             responseBytes = b''
             responseBytes += header.toBytes()
