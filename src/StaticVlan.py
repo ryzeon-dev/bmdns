@@ -57,7 +57,7 @@ class StaticVlan:
 
     def allows(self, ip):
         u32Ip = ipToU32(ip)
-        return self.u32BaseIp < u32Ip < self.u32NetMask
+        return self.u32BaseIp < u32Ip < self.u32BrdIp
 
     def search(self, target):
         ip = self.remaps.get(target)
