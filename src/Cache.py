@@ -20,9 +20,10 @@ class Cache:
         try:
             response = DnsResponse(bytes)
 
-        except Exception as e:
+        except:
             return
 
+        # any given dns response is accepted and cached only if the TTL is not zero and if it is either QTYPE_A or QTYPE_CNAME
         if response.ttl == 0 or (
             response.question.qtype != QUESTIONTYPE_A and response.question.qtype != QUESTIONTYPE_CNAME
         ):
@@ -42,10 +43,12 @@ class Cache:
         if response is None:
             return
 
-        # if the result is None, it means the TTL is expired
+        # if the result is None, it means the TTL expired
         bytes = response.packForId(id)
         if bytes is None:
             self.__mutex.acquire()
+
+            # TTL expiry requires elimination from cache
             self.__cache.pop(qname)
             self.__mutex.release()
             return None

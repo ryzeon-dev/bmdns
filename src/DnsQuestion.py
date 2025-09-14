@@ -20,7 +20,6 @@ class DnsQuestion:
         index += 2
 
         self.qclass = bytesToU16(bytes[index:index+2])
-
         index += 2
 
         self.byteSize = index

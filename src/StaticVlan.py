@@ -31,7 +31,7 @@ class StaticVlan:
         self.name = name
 
         if '__vlanmask' not in conf:
-            print('`__vlanmask` not specified in static vlan mapping', file=sys.stderr)
+            print(f'`__vlanmask` not specified in `{name}` static vlan mapping', file=sys.stderr)
             sys.exit(1)
 
         self.vlanMask = conf.pop('__vlanmask')

@@ -1,3 +1,5 @@
+import sys
+
 import yaml
 import re
 from StaticVlan import StaticVlan
@@ -16,12 +18,35 @@ class Conf:
         with open(self.confPath, 'r') as file:
             yconf = yaml.load(file, Loader=yaml.FullLoader)
 
-        self.host = yconf['host']
-        self.port = yconf['port']
-        self.static: dict = yconf['static']
-        self.rootServers = yconf['root-servers']
-        self.blocklists = yconf['blocklists']
-        self.persistentLog = yconf['persistent-log']
+        self.host = yconf.get('host')
+        if self.host is None:
+            print('configuration error: `host` field not found')
+            sys.exit(1)
+
+        self.port = yconf.get('port')
+        if self.port is None:
+            print('configuration error: `port` field not found')
+            sys.exit(1)
+
+        self.static: dict = yconf.get('static')
+        if self.static is None:
+            print('configuration error: `static` field not found')
+            sys.exit(1)
+
+        self.rootServers = yconf.get('root-servers')
+        if self.rootServers is None:
+            print('configuration error: `root-servers` field not found')
+            sys.exit(1)
+
+        self.blocklists = yconf.get('blocklists')
+        if self.blocklists is None:
+            print('configuration error: `blocklists` field not found')
+            sys.exit(1)
+
+        self.persistentLog = yconf.get('persistent-log')
+        if self.persistentLog is None:
+            print('configuration error: `persistent-log` field not found')
+            sys.exit(1)
 
     def __parseStatic(self):
         keys = list(self.static.keys())
