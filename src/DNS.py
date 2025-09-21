@@ -97,17 +97,6 @@ class DNS:
             return
 
         if qtype == QUESTIONTYPE_A: # A -> IPv4 query
-            if responseBytes := self.cache.getForId(qname, requestId):
-                self.logger.log(f'{strRequestId} | giving cached answer to {fmtClientAddress} asking for {qname}')
-
-                try:
-                    self.socket.sendto(responseBytes, clientAddress)
-
-                except:
-                    self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
-
-                return
-
             if self.useStaticVlans:
                 for staticVlan in self.conf.staticVlans:
                     # checks if the client IP address belongs to a registered vlan
@@ -136,8 +125,19 @@ class DNS:
                 except:
                     self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
-                # response gets cached even if socket answer fails
-                self.cache.append(responseBytes)
+                # # response gets cached even if socket answer fails
+                # self.cache.append(responseBytes)
+                return
+
+            if responseBytes := self.cache.getForId(qname, requestId):
+                self.logger.log(f'{strRequestId} | giving cached answer to {fmtClientAddress} asking for {qname}')
+
+                try:
+                    self.socket.sendto(responseBytes, clientAddress)
+
+                except:
+                    self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
+
                 return
 
         elif qtype == QUESTIONTYPE_CNAME:
