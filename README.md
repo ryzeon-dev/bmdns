@@ -1,27 +1,63 @@
+<p align="center">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v2.1.0-16a085">
+<img alt="Release Badge" src="https://img.shields.io/github/v/release/ryzeon-dev/bmdns?color=16a085"/>
+<img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
+<img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
+</p>
+
 # Bare-Metal DNS
 Simple IPv4-only DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
 
 ## Warning
-The software has only been tested on GNU/Linux, at the moment. Its behaviour is unknown on other Operative Systems 
-(it is expected to work just fine on BSD distributions).
+The software officially supports GNU/Linux systems only. Windows support is being added, but it's still experimental.
 
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed 
 
 ## Install
-Run the installation script as root
+#### Linux
+On Linux run the installation script as root
 ```commandline
 sudo bash install.sh
 ```
+The installation script 
+- compiles the software
+- creates the required directories (`/etc/bmdns` and `/usr/local/share/bmdns`)
+- copies the default configuration file into `/etc/bmdns/conf.yaml`
+- installs the compiled binary (into `/usr/local/bin`) 
+- adds `bmdns.service` to systemd services 
+
+#### Windows
+
+On Windows run the installation script as an administrator:
+```commandline
+.\install.bat
+```
+The installation script 
+- compiles the software 
+- creates the required directories (`%PROGRAMFILES(X86)%\bmdns\`, `%PROGRAMFILES(X86)%\bmdns\bin\`, `%PROGRAMFILES(X86)%\bmdns\log\`) 
+- copies the default configuration file into `%PROGRAMFILES(X86)%\bmdns\conf.yaml`
+- installs the compiled binary into  `%PROGRAMFILES(X86)%\bmdns\bin\`
+
+In order to create a Service for this software, you'll need to use some intermediary, such as [srvany](https://github.com/birkett/srvany-ng) or [alwaysup](https://github.com/always-up-app/always-up-app)
 
 ## Uninstall
-Run the uninstallation script as root
+#### Linux
+On Linux run the uninstallation script as root
 ```commandline
 sudo bash uninstall.sh
 ```
 
+#### Windows
+On Windows run the uninstallation script as an administrator
+```commandline
+.\uninstall.bat
+```
+
 ## Configuration
-Configuration involves editing `/etc/bmdns/conf.yaml` file.
+Configuration involves editing:
+- `/etc/bmdns/conf.yaml` file on linux systems
+- `%PROGRAMFILES(X86)%/bmdns/conf.yaml` on windows systems
 
 A sample configuration file is
 ```yaml
@@ -114,7 +150,11 @@ BMDNS searches for an answer to a given query in the following order:
 Useful note: static mappings are faster to search into than blocklist files 
 
 ## Log
-If log-persistency is set to `false`, BMDNS writes its log in the file `/usr/local/share/bmdns/bmdns.log`, which is created during the installation process. 
+Log files are written into:
+- `/usr/local/share/bmdns/` directory on linux systems
+- `%PROGRAMFILES(X86)%/bmdns/log/` directory on windows systems
+
+If log-persistency is set to `false`, BMDNS writes its log in the file `LOG_DIR/bmdns.log`, which is created during the installation process. 
 The log is wiped at every restart of the service  
 
 If log-persistency is set to `true`, BMDNS will create a new file at every restart of the service, naming it `bmdns_[$date]_[$time].log`.

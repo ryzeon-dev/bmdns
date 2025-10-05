@@ -1,0 +1,1 @@
+rmdir "%PROGRAMFILES(X86)%\bmdns"
