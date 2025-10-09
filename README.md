@@ -1,15 +1,18 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v2.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.0.0-16a085">
 <img alt="Release Badge" src="https://img.shields.io/github/v/release/ryzeon-dev/bmdns?color=16a085"/>
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
 </p>
 
 # Bare-Metal DNS
-Simple IPv4-only DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
+Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
 
-## Warning
-The software officially supports GNU/Linux systems only. Windows support is being added, but it's still experimental.
+## Supported OS
+The software officially supports GNU/Linux and Windows. 
+
+It should work on FreeBSD and MacOS systems, but it is untested. 
+
 
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed 
@@ -85,7 +88,6 @@ e.g. you have a server named `my-server` with ip address `192.168.0.2`
 static:
   my-server: 192.168.0.2
 ```
-<br/> 
 <br/>
 
 

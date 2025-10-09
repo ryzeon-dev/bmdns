@@ -6,7 +6,8 @@ from threading import Semaphore, Thread
 import time
 
 class Cache:
-    def __init__(self):
+    def __init__(self, qtype):
+        self.cacheQtype = qtype
         self.__mutex = Semaphore(1)
         self.__cache = {}
 
@@ -24,9 +25,7 @@ class Cache:
             return
 
         # any given dns response is accepted and cached only if the TTL is not zero and if it is either QTYPE_A or QTYPE_CNAME
-        if response.ttl == 0 or (
-            response.question.qtype != QUESTIONTYPE_A and response.question.qtype != QUESTIONTYPE_CNAME
-        ):
+        if response.ttl == 0 or response.question.qtype != self.cacheQtype:
             return
 
         qname = decodeName(response.qname, 0)
