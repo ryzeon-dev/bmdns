@@ -51,3 +51,6 @@ class DnsRecord:
         bytes += self.data
 
         return bytes
+
+    def __repr__(self):
+        return f'DnsRecord( {self.name = } ; {self.type = } ; {self.class_ = } ; {self.ttl = } ; {self.dataSize = } ; {self.data} )'

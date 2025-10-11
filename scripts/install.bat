@@ -1,3 +1,8 @@
+if not exists "src" (
+    echo "Do not run installation script inside of `scripts` directory. Run it from the `bmdns` directory"
+    exit /b 1
+)
+
 python -m venv venv
 
 set oldPath="%PATH%"

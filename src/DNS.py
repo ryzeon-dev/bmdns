@@ -145,7 +145,7 @@ class DNS:
                 self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
             if qtype in self.qtypes:
-                self.caches[qtype].append(bytes)
+                self.caches[qtype].append(responseBytes)
 
             return
 

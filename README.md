@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.0.0-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.0.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.0.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.0.1-16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
 </p>
@@ -11,8 +11,8 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
 ## Supported OS
 The software officially supports GNU/Linux and Windows. 
 
-It should work on FreeBSD and MacOS systems, but it is untested. 
-
+It should work on FreeBSD and MacOS systems, but it is untested.  
+The `install`/`update`/`uninstall` scripts are specifically written for GNU/Linux and Windows, any attempt of running them in other OS may lead to errors and unexpected behaviour. 
 
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed 
@@ -21,7 +21,7 @@ Compilation requires `python3 python3-venv python3-pip` packages to be installed
 #### Linux
 On Linux run the installation script as root
 ```commandline
-sudo bash install.sh
+sudo bash ./scripts/install.sh
 ```
 The installation script 
 - compiles the software
@@ -34,7 +34,7 @@ The installation script
 
 On Windows run the installation script as an administrator:
 ```commandline
-.\install.bat
+.\scripts\install.bat
 ```
 The installation script 
 - compiles the software 
@@ -44,17 +44,33 @@ The installation script
 
 In order to create a Service for this software, you'll need to use some intermediary, such as [srvany](https://github.com/birkett/srvany-ng) or [alwaysup](https://github.com/always-up-app/always-up-app)
 
+## Update
+The `update` script compiles and installs a new version of `bmdns` without touching the existing configuration files
+
+#### Linux
+On Linux run the update script as root
+```commandline
+sudo bash ./scripts/update.sh
+```
+
+#### Windows
+On windows run the update script as an administrator
+```commandline
+.\scripts\update.bat
+```
+
+
 ## Uninstall
 #### Linux
 On Linux run the uninstallation script as root
 ```commandline
-sudo bash uninstall.sh
+sudo bash ./scripts/uninstall.sh
 ```
 
 #### Windows
 On Windows run the uninstallation script as an administrator
 ```commandline
-.\uninstall.bat
+.\scripts\uninstall.bat
 ```
 
 ## Configuration

@@ -24,7 +24,7 @@ class QTYPE:
     @staticmethod
     def codeToName(code):
         for attr, value in QTYPE.__dict__.items():
-            if value == code:
+            if attr == attr.upper() and '_' not in attr and value == code:
                 return attr
 
         return None

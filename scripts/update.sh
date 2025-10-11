@@ -1,8 +1,15 @@
-#!/bin/bash
-
 if [ "$(id -u)" != "0" ]; then
   echo "Execution requires root"
   exit 1
+fi
+
+if [ "$(ls | grep src)" == "" ]; then
+  echo "Do not run update script inside of `scripts` directory. Run it from the `bmdns` directory"
+  exit 1
+fi
+
+if [ "$(systemctl status bmdns | grep "Active: active")" ]; then
+  systemctl stop bmdns
 fi
 
 python3 -m venv venv
@@ -18,13 +25,5 @@ deactivate
 rm -rf build dist bare-metal-dns.spec venv
 
 cp ./bin/bare-metal-dns /usr/local/bin
-mkdir -p /etc/bmdns
-
-mkdir -p /usr/local/share/bmdns
-touch /usr/local/share/bmdns/bmdns.log
-
-cp ./sample_conf.yaml /etc/bmdns/conf.yaml
-cp ./bmdns.service /etc/bmdns/bmdns.service
-
-systemctl enable /etc/bmdns/bmdns.service
-systemctl start bmdns.service
+systemctl daemon-reload
+systemctl restart bmdns
