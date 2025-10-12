@@ -8,6 +8,27 @@
 # Bare-Metal DNS
 Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
 
+# Index
+- [Supported OS](#supported-os) 
+- [OS Requirements](#os-requirements) 
+- [Install](#install)   
+  - [Linux](#linux) 
+  - [Windows](#windows)
+  - [Docker](#docker)
+- [Update](#update)
+  - [Linux](#linux-1)
+  - [Windows](#windows-1)
+- [Uninstall](#uninstall)
+  - [Linux](#linux-2)
+  - [Windows](#windows-2)
+- [Configuration](#configuration)
+  - [Static Remaps](#static-remaps)
+  - [Root Servers](#root-servers)
+  - [Blocklists](#blocklists)
+- [Cascading Search](#cascading-search)
+- [Log](#log)
+
+
 ## Supported OS
 The software officially supports GNU/Linux and Windows. 
 
@@ -44,12 +65,23 @@ The installation script
 
 In order to create a Service for this software, you'll need to use some intermediary, such as [srvany](https://github.com/birkett/srvany-ng) or [alwaysup](https://github.com/always-up-app/always-up-app)
 
+#### Docker
+
+To instance `bmdns` in a docker container, run the following command 
+```commandline
+sudo docker run --name <name> -p 53:53 --mount type=bind,src=<host-mountpoint>,dst=/etc/bmdns ryzeondev/bmdns:latest
+```
+Replace:
+- `<name>` with the name you want to give the container 
+- `<host-mountpoint>`with  a local directory where to mount `/etc/bmdns` from the container; this allows to edit the configuration file 
+
 ## Update
 The `update` script compiles and installs a new version of `bmdns` without touching the existing configuration files
 
 #### Linux
 On Linux run the update script as root
 ```commandline
+sudo bash ./scripts/update.sh
 sudo bash ./scripts/update.sh
 ```
 
