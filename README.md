@@ -1,6 +1,7 @@
 <p align="center">
 <img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.0.1-16a085">
 <img alt="Version Badge" src="https://img.shields.io/badge/release-v3.0.1-16a085">
+<img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
 </p>
@@ -11,6 +12,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
 # Index
 - [Supported OS](#supported-os) 
 - [OS Requirements](#os-requirements) 
+- [Log Analyzer - BMDLA](#log-analyzer---bmdla)
 - [Install](#install)   
   - [Linux](#linux) 
   - [Windows](#windows)
@@ -38,8 +40,12 @@ The `install`/`update`/`uninstall` scripts are specifically written for GNU/Linu
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed 
 
+## Log Analyzer - BMDLA
+[BMDLA](https://github.com/ryzeon-dev/bmdla) is the software specifically written to analyze the log files from BMDNS. \
+It provides a series of actions, allowing to check for most requested domains, most active requestants and more.
+
 ## Install
-#### Linux
+### Linux
 On Linux run the installation script as root
 ```commandline
 sudo bash ./scripts/install.sh
@@ -51,7 +57,7 @@ The installation script
 - installs the compiled binary (into `/usr/local/bin`) 
 - adds `bmdns.service` to systemd services 
 
-#### Windows
+### Windows
 
 On Windows run the installation script as an administrator:
 ```commandline
@@ -65,7 +71,7 @@ The installation script
 
 In order to create a Service for this software, you'll need to use some intermediary, such as [srvany](https://github.com/birkett/srvany-ng) or [alwaysup](https://github.com/always-up-app/always-up-app)
 
-#### Docker
+### Docker
 
 To instance `bmdns` in a docker container, run the following command 
 ```commandline
@@ -78,14 +84,13 @@ Replace:
 ## Update
 The `update` script compiles and installs a new version of `bmdns` without touching the existing configuration files
 
-#### Linux
+### Linux
 On Linux run the update script as root
 ```commandline
 sudo bash ./scripts/update.sh
-sudo bash ./scripts/update.sh
 ```
 
-#### Windows
+### Windows
 On windows run the update script as an administrator
 ```commandline
 .\scripts\update.bat
@@ -93,13 +98,13 @@ On windows run the update script as an administrator
 
 
 ## Uninstall
-#### Linux
+### Linux
 On Linux run the uninstallation script as root
 ```commandline
 sudo bash ./scripts/uninstall.sh
 ```
 
-#### Windows
+### Windows
 On Windows run the uninstallation script as an administrator
 ```commandline
 .\scripts\uninstall.bat
