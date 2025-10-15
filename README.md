@@ -75,11 +75,15 @@ In order to create a Service for this software, you'll need to use some intermed
 
 To instance `bmdns` in a docker container, run the following command 
 ```commandline
-sudo docker run --name <name> -p 53:53 --mount type=bind,src=<host-mountpoint>,dst=/etc/bmdns ryzeondev/bmdns:latest
+sudo docker run --name <name> -p 53:53/udp --mount type=bind,src=<conf-mountpoint>,dst=/etc/bmdns ryzeondev/bmdns:latest
 ```
 Replace:
 - `<name>` with the name you want to give the container 
-- `<host-mountpoint>`with  a local directory where to mount `/etc/bmdns` from the container; this allows to edit the configuration file 
+- `<conf-mountpoint>` with  a local directory where to mount `/etc/bmdns` from the container; this allows to edit the configuration file
+
+
+Optionally, you can add `--mount type=bind,src=<log-mountpoint>,dst=/var/log/bmdns` argument, replacing `<log-mountpoint>` 
+with a local directory where to mount `/var/log/bmdns` from the container; this allows to inspect log file(s)
 
 ## Update
 The `update` script compiles and installs a new version of `bmdns` without touching the existing configuration files
