@@ -1,8 +1,8 @@
 import os
 
 if os.sys.platform == 'linux':
-    LOG_DIR = '/usr/local/share/bmdns'
-    LOG_FILE = '/usr/local/share/bmdns/bmdns.log'
+    LOG_DIR = '/var/log/bmdns'
+    LOG_FILE = '/var/log/bmdns/bmdns.log'
 
 elif os.sys.platform == 'win32':
     programFiles = os.environ.get('PROGRAMFILES(X86)')

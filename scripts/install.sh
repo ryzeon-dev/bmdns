@@ -25,8 +25,8 @@ rm -rf build dist bare-metal-dns.spec venv
 cp ./bin/bare-metal-dns /usr/local/bin
 mkdir -p /etc/bmdns
 
-mkdir -p /usr/local/share/bmdns
-touch /usr/local/share/bmdns/bmdns.log
+mkdir -p /var/log/bmdns
+touch /var/log/bmdns/bmdns.log
 
 cp ./conf/sample_conf.yaml /etc/bmdns/conf.yaml
 cp ./conf/bmdns.service /etc/bmdns/bmdns.service

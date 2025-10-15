@@ -4,7 +4,7 @@ from DNS import DNS
 import sys
 import os
 
-VERSION = 'v2.1.0'
+VERSION = 'v3.1.0'
 
 if __name__ == '__main__':
     if os.sys.platform == 'linux':

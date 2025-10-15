@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.0.1-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.0.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.1.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -52,7 +52,7 @@ sudo bash ./scripts/install.sh
 ```
 The installation script 
 - compiles the software
-- creates the required directories (`/etc/bmdns` and `/usr/local/share/bmdns`)
+- creates the required directories (`/etc/bmdns` and `/var/log/bmdns`)
 - copies the default configuration file into `/etc/bmdns/conf.yaml`
 - installs the compiled binary (into `/usr/local/bin`) 
 - adds `bmdns.service` to systemd services 
@@ -206,7 +206,7 @@ Useful note: static mappings are faster to search into than blocklist files
 
 ## Log
 Log files are written into:
-- `/usr/local/share/bmdns/` directory on linux systems
+- `/var/log/bmdns/` directory on linux systems
 - `%PROGRAMFILES(X86)%/bmdns/log/` directory on windows systems
 
 If log-persistency is set to `false`, BMDNS writes its log in the file `LOG_DIR/bmdns.log`, which is created during the installation process. 
