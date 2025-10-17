@@ -1,6 +1,6 @@
 <p align="center">
 <img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.1.1-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.1.1-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
