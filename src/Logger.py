@@ -1,5 +1,5 @@
+import sys
 import time
-import os
 from constants import *
 
 class Logger:
@@ -11,8 +11,13 @@ class Logger:
         else:
             self.filePath = LOG_FILE
 
-        self.__resetLogFile()
-        self.__file = open(self.filePath, 'a')
+        try:
+            self.__resetLogFile()
+            self.__file = open(self.filePath, 'a')
+
+        except:
+            print('Fatal: execution attempt without proper install (log directory not found or inaccessible)')
+            sys.exit(1)
 
     def __resetLogFile(self):
         with open(self.filePath, 'w') as file:
