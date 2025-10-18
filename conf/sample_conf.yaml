@@ -1,7 +1,8 @@
 host: 0.0.0.0
 port: 53
 
-persistent-log: false
+logging: yes
+persistent-log: no
 
 static:
   me.local: 0.0.0.0

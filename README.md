@@ -1,5 +1,5 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.1.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.2.0-16a085">
 <img alt="Version Badge" src="https://img.shields.io/badge/release-v3.1.1-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
@@ -148,7 +148,7 @@ static:
 ```
 <br/>
 
-
+### VLANs
 BMDNS's static remaps support vlans. This way a single DNS server can be used for multiple vlans (provided that the host has the ability to access all of them).
 When using vlans, only the requestant whose address belongs to a certain vlan may access its static remaps.
 
@@ -170,6 +170,18 @@ When creating a vlan space, a certain syntax is required:
 - inside the just created vlan object, create an object named `__vlanmask` with `<ip-address>/<cidr>` as value
   - if no `cidr` is specified, `24` is assumed
 - then follow with the static remaps
+
+#### VLAN lock
+BMDNS vlans can be configured to block access to external resolutions (root server's ones), 
+and only allow satic vlan remaps to be forwarded.\
+To do so, add `__block-external: yes` to your vlan configuration
+
+```yaml
+static:
+  _vlan0:
+    __vlankmask: 192.168.0.0/24
+    __block-external: yes
+```
 
 
 ### Root Servers
@@ -201,11 +213,10 @@ blocklists:
 
 ## Cascading search
 BMDNS searches for an answer to a given query in the following order:
-- internal cache
-  - internal cache is used for both IPv4 and CNAME queries 
 - static mappings
 - blocklist files
-- root server
+- internal cache 
+- root servers
 
 Useful note: static mappings are faster to search into than blocklist files 
 

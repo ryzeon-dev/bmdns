@@ -35,9 +35,16 @@ class StaticVlan:
             sys.exit(1)
 
         self.vlanMask = conf.pop('__vlanmask')
+
+        if '__block-external' in conf:
+            self.blockExternal = conf.pop('__block-external')
+        else:
+            self.blockExternal = False
+
         self.__unpackVlanMask()
 
         self.remaps = conf
+        print(self.remaps)
 
     def __unpackVlanMask(self):
         ip = None

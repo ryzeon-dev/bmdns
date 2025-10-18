@@ -48,6 +48,11 @@ class Conf:
             print('configuration error: `persistent-log` field not found')
             sys.exit(1)
 
+        self.logging = yconf.get('logging')
+        if self.logging is None:
+            print('configuration error: `loggin` field not found')
+            sys.exit(1)
+
     def __parseStatic(self):
         keys = list(self.static.keys())
 

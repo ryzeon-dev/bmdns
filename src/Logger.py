@@ -3,7 +3,11 @@ import time
 from constants import *
 
 class Logger:
-    def __init__(self, persistentLog=False):
+    def __init__(self, persistentLog=False, doLog=True):
+        self.doLog = doLog
+        if not self.doLog:
+            return
+
         if persistentLog:
             fileName = 'bmdns_' + self.__fmtNow().replace(' ', '_').replace('/', '-').replace(':', '-') + '.log'
             self.filePath = os.path.join(LOG_DIR, fileName)
@@ -13,7 +17,7 @@ class Logger:
 
         try:
             self.__resetLogFile()
-            self.__file = open(self.filePath, 'a')
+            self._file = open(self.filePath, 'a') # FIXME change back to self.__file
 
         except:
             print('Fatal: execution attempt without proper install (log directory not found or inaccessible)')
@@ -29,13 +33,16 @@ class Logger:
         return f'{now.tm_year}/{now.tm_mon}/{now.tm_mday} {now.tm_hour}:{now.tm_min}:{now.tm_sec}'
 
     def alert(self, text):
-        print(f'[!] {self.__fmtNow()} | {text}', file=self.__file)
-        self.__file.flush()
+        if self.doLog:
+            print(f'[!] {self.__fmtNow()} | {text}', file=self._file)
+            self._file.flush()
 
     def log(self, text):
-        print(f'[*] {self.__fmtNow()} | {text}', file=self.__file)
-        self.__file.flush()
+        if self.doLog:
+            print(f'[*] {self.__fmtNow()} | {text}', file=self._file)
+            self._file.flush()
 
     def error(self, text):
-        print(f'[x] {self.__fmtNow()} | {text}', file=self.__file)
-        self.__file.flush()
+        if self.doLog:
+            print(f'[x] {self.__fmtNow()} | {text}', file=self._file)
+            self._file.flush()

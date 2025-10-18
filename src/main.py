@@ -4,12 +4,11 @@ from DNS import DNS
 import sys
 import os
 
-VERSION = 'v3.1.1'
+VERSION = 'v3.2.0'
 
 if __name__ == '__main__':
     if os.sys.platform == 'linux':
         CONF_PATH = '/etc/bmdns/conf.yaml'
-
 
     elif os.sys.platform == 'win32':
         programFiles = os.environ.get('PROGRAMFILES(X86)')
@@ -29,7 +28,6 @@ if __name__ == '__main__':
     except Exception as e:
         print(f'Fatal: {e}')
         sys.exit(1)
-
 
     try:
         dns = DNS(conf)
