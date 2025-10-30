@@ -1,1 +1,1 @@
-rmdir "%PROGRAMFILES(X86)%\bmdns"
+rmdir "%PROGRAMFILES%\bmdns"

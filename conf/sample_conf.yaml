@@ -1,3 +1,6 @@
+# configuration is explained in the README.md file at
+# https://github.com/ryzeon-dev/bmdns
+
 host: 0.0.0.0
 port: 53
 

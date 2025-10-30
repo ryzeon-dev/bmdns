@@ -44,7 +44,6 @@ class StaticVlan:
         self.__unpackVlanMask()
 
         self.remaps = conf
-        print(self.remaps)
 
     def __unpackVlanMask(self):
         ip = None

@@ -17,7 +17,7 @@ class Logger:
 
         try:
             self.__resetLogFile()
-            self._file = open(self.filePath, 'a') # FIXME change back to self.__file
+            self._file = open(self.filePath, 'a')
 
         except:
             print('Fatal: execution attempt without proper install (log directory not found or inaccessible)')

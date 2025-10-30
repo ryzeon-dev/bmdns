@@ -5,7 +5,7 @@ if os.sys.platform == 'linux':
     LOG_FILE = '/var/log/bmdns/bmdns.log'
 
 elif os.sys.platform == 'win32':
-    programFiles = os.environ.get('PROGRAMFILES(X86)')
+    programFiles = os.environ.get('PROGRAMFILES')
     LOG_DIR = os.path.join(programFiles, 'bmdns', 'log')
     LOG_FILE = os.path.join(LOG_DIR, 'bmdns.log')
 

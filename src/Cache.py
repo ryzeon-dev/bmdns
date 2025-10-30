@@ -17,10 +17,8 @@ class Cache:
     def append(self, bytes):
         if not bytes:
             return
-
         try:
             response = DnsResponse(bytes)
-
         except:
             return
 

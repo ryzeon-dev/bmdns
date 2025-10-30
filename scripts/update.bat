@@ -17,4 +17,4 @@ mkdir .\bin
 copy .\dist\bare-metal-dns.exe .\bin\bare-metal-dns.exe /Y
 rmdir .\dist .\build .\venv /s /q
 
-copy .\bin\bare-metal-dns.exe "%PROGRAMFILES(X86)%\bmdns\bin\bare-metal-dns.exe" /Y
+copy .\bin\bare-metal-dns.exe "%PROGRAMFILES%\bmdns\bin\bare-metal-dns.exe" /Y
