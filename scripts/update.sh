@@ -27,5 +27,11 @@ rm -rf build dist bare-metal-dns.spec venv
 cp ./bin/bare-metal-dns /usr/local/bin
 mkdir -p /var/log/bmdns
 
+if [ -f /etc/bmdns/bmdns.service ]; then
+  rm /etc/bmdns/bmdns.service
+fi
+
+cp ./conf/bmdns.service /etc/systemd/system/bmdns.service
+
 systemctl daemon-reload
 systemctl restart bmdns

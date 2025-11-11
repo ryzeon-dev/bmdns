@@ -15,6 +15,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
 - [Log Analyzer - BMDLA](#log-analyzer---bmdla)
 - [Install](#install)   
   - [Linux](#linux) 
+  - [Debian](#debian)
   - [Windows](#windows)
   - [Docker](#docker)
 - [Update](#update)
@@ -56,6 +57,12 @@ The installation script
 - copies the default configuration file into `/etc/bmdns/conf.yaml`
 - installs the compiled binary (into `/usr/local/bin`) 
 - adds `bmdns.service` to systemd services 
+
+### Debian
+Run the following line in a dedicated directory
+```commandline
+wget https://github.com/ryzeon-dev/bmdns/releases/download/v3.2.1/bmdns_3.2.1_amd64.deb && sudo dpkg -i ./bmdns_*_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
+```
 
 ### Windows
 
