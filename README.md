@@ -64,6 +64,8 @@ Run the following line in a dedicated directory
 wget https://github.com/ryzeon-dev/bmdns/releases/download/v4.0.0/bmdns_4.0.0_amd64.deb && sudo dpkg -i ./bmdns_*_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
 ```
 
+Warning: the executables were compiled and packed into .deb on Debian 13, the package might not work on older Debian releases (because of glibc versions)  
+
 ### Windows
 
 On Windows run the installation script as an administrator:
