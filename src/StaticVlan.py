@@ -1,5 +1,6 @@
 import sys
 import re
+from StaticRemap import StaticRemap
 
 def ipToU32(ip):
     chunks = ip.split('.')
@@ -43,7 +44,13 @@ class StaticVlan:
 
         self.__unpackVlanMask()
 
-        self.remaps = conf
+        self.yamlRemaps = conf
+        self.remaps = {}
+        self.__parseRemaps()
+
+    def __parseRemaps(self):
+        for key, value in self.yamlRemaps.items():
+            self.remaps[key] = StaticRemap(key, value)
 
     def __unpackVlanMask(self):
         ip = None
@@ -65,17 +72,17 @@ class StaticVlan:
         u32Ip = ipToU32(ip)
         return self.u32BaseIp < u32Ip < self.u32BrdIp
 
-    def search(self, target):
-        ip = self.remaps.get(target)
-        if ip is not None:
-            return ip
+    def search(self, target, qtype):
+        remap = self.remaps.get(target)
+        if remap is not None:
+            return remap.has(target, qtype)
 
         # some programs add `.localhost` when not TLD is provided
-        ip = self.remaps.get(target.removesuffix('.localhost'))
-        if ip is not None:
-            return ip
+        remap = self.remaps.get(target.removesuffix('.localhost'))
+        if remap is not None:
+            return remap.has(target, qtype)
 
         # some programs add `.local` when not TLD is provided
-        ip = self.remaps.get(target.removesuffix('.local'))
-        if ip is not None:
-            return ip
+        remap = self.yamlRemaps.get(target.removesuffix('.local'))
+        if remap is not None:
+            return remap.has(target, qtype)

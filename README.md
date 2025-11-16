@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v3.2.1-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v3.2.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.0.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v4.0.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -61,7 +61,7 @@ The installation script
 ### Debian
 Run the following line in a dedicated directory
 ```commandline
-wget https://github.com/ryzeon-dev/bmdns/releases/download/v3.2.1/bmdns_3.2.1_amd64.deb && sudo dpkg -i ./bmdns_*_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
+wget https://github.com/ryzeon-dev/bmdns/releases/download/v4.0.0/bmdns_4.0.0_amd64.deb && sudo dpkg -i ./bmdns_*_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
 ```
 
 ### Windows
@@ -72,9 +72,9 @@ On Windows run the installation script as an administrator:
 ```
 The installation script 
 - compiles the software 
-- creates the required directories (`%PROGRAMFILES(X86)%\bmdns\`, `%PROGRAMFILES(X86)%\bmdns\bin\`, `%PROGRAMFILES(X86)%\bmdns\log\`) 
-- copies the default configuration file into `%PROGRAMFILES(X86)%\bmdns\conf.yaml`
-- installs the compiled binary into  `%PROGRAMFILES(X86)%\bmdns\bin\`
+- creates the required directories (`%PROGRAMFILES%\bmdns\`, `%PROGRAMFILES%\bmdns\bin\`, `%PROGRAMFILES%\bmdns\log\`) 
+- copies the default configuration file into `%PROGRAMFILES%\bmdns\conf.yaml`
+- installs the compiled binary into  `%PROGRAMFILES%\bmdns\bin\`
 
 In order to create a Service for this software, you'll need to use some intermediary, such as [srvany](https://github.com/birkett/srvany-ng) or [alwaysup](https://github.com/always-up-app/always-up-app)
 
@@ -108,7 +108,6 @@ On windows run the update script as an administrator
 .\scripts\update.bat
 ```
 
-
 ## Uninstall
 ### Linux
 On Linux run the uninstallation script as root
@@ -125,7 +124,7 @@ On Windows run the uninstallation script as an administrator
 ## Configuration
 Configuration involves editing:
 - `/etc/bmdns/conf.yaml` file on linux systems
-- `%PROGRAMFILES(X86)%/bmdns/conf.yaml` on windows systems
+- `%PROGRAMFILES%/bmdns/conf.yaml` on windows systems
 
 A sample configuration file is
 ```yaml
@@ -146,18 +145,42 @@ blocklists:
 ```
 
 ### Static remaps
-To add a personalized dns resolution, add the hostname with its ip address to `static` section. 
+To add a personalized dns resolution, add the hostname with its ip address to `static` section.
 
-e.g. you have a server named `my-server` with ip address `192.168.0.2`
+Static remap supports A, AAAA, TXT and CNAME types.
+
+e.g. you have a server named `my-server` with ip address `192.168.0.2` \
+To only set IPv4 (A) resolution, just specify as follows
 ```yaml
 static:
   my-server: 192.168.0.2
 ```
+
+To set multiple resolutions for the same domain name, specify as follows \
+```yaml
+static:
+    my-server:
+      A: 192.168.0.2
+      TXT: key=value
+      AAAA: fe80:deeb::beef
+      CNAME: my-server.lan
+```
+Note that record types can be omitted if not needed (e.g. you only want to set IPv4 [A] and IPv6 [AAAA] types)
+
+```yaml
+static:
+    my-server:
+      A: 192.168.0.2
+      AAAA: fe80:deeb::beef
+```
+
 <br/>
 
 ### VLANs
 BMDNS's static remaps support vlans. This way a single DNS server can be used for multiple vlans (provided that the host has the ability to access all of them).
 When using vlans, only the requestant whose address belongs to a certain vlan may access its static remaps.
+
+Vlan remaps follow the same syntax-scheme as standard remaps
 
 e.g. you have two vlans (with addresses `192.168.0.0` and `192.168.1.0`), and you have a server that lives on both named `my-server` with ip addresses (respectively) `192.168.0.2` and `192.168.1.2` 
 ```yaml 
@@ -230,7 +253,7 @@ Useful note: static mappings are faster to search into than blocklist files
 ## Log
 Log files are written into:
 - `/var/log/bmdns/` directory on linux systems
-- `%PROGRAMFILES(X86)%/bmdns/log/` directory on windows systems
+- `%PROGRAMFILES%/bmdns/log/` directory on windows systems
 
 If log-persistency is set to `false`, BMDNS writes its log in the file `LOG_DIR/bmdns.log`, which is created during the installation process. 
 The log is wiped at every restart of the service  

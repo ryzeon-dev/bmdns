@@ -36,6 +36,17 @@ def decodeName(fullBytes, startIndex):
 
     return '.'.join(chunks)
 
+def encodeName(name):
+    splitName = name.split('.')
+    encoded = b''
+
+    for chunk in splitName:
+        encoded += struct.pack('!B', len(chunk))
+        encoded += chunk.encode()
+
+    encoded += b'\x00'
+    return encoded
+
 def checkBitFlag(byte, bitpos):
     return (byte & bitpos) == bitpos
 
@@ -62,5 +73,22 @@ def ipToBytes(ip):
 
     for chunk in ip.split('.'):
         bytes += struct.pack('!B', int(chunk))
+
+    return bytes
+
+def ipv6ToBytes(ip):
+    bytes = b''
+    chunks = ip.split(':')
+
+    if '' in chunks:
+        index = chunks.index('')
+        chunks.remove('')
+
+        for _ in range(8 - len(chunks)):
+            chunks.insert(index, '0')
+
+    for chunk in chunks:
+        u16Chunk = int(chunk, 16)
+        bytes += u16ToBytes(u16Chunk)
 
     return bytes

@@ -1,11 +1,12 @@
 import socket as sk
+import struct
 from _thread import start_new_thread
 
 from Cache import Cache
 from DnsHeader import DnsHeader
 from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
-from utils import ipToBytes, u16ToBytes, decodeName
+from utils import ipToBytes, u16ToBytes, decodeName, encodeName, ipv6ToBytes
 from Logger import Logger
 from constants import *
 from qtype import QTYPE
@@ -55,18 +56,32 @@ class DNS:
 
         self.logger.alert(f'{strRequestId} | {fmtClientAddress} asks for {qname} [{QTYPE.codeToName(qtype)}]')
 
-        def assembleResponse(ip):
+        def assembleResponse(data, type=QTYPE.A):
             answer = DnsRecord()
 
             # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
             answer.name = QNAME_STD_POINTER  #
-            answer.type = QTYPE.A
+            answer.type = type
 
             answer.class_ = question.qclass
             answer.ttl = RECORD_MAX_TTL
 
-            answer.dataSize = IP_ADDRESS_BYTE_SIZE
-            answer.data = ipToBytes(ip)
+            if qtype == QTYPE.A:
+                answer.dataSize = IP_ADDRESS_BYTE_SIZE
+                answer.data = ipToBytes(data)
+
+            elif qtype == QTYPE.TXT:
+                answer.data = struct.pack("B", len(data)) + data.encode()
+                answer.dataSize = len(answer.data)
+
+            elif qtype == QTYPE.CNAME:
+                encodedName = encodeName(data)
+                answer.dataSize = len(encodedName)
+                answer.data = encodedName
+
+            elif qtype == QTYPE.AAAA:
+                answer.dataSize = IPv6_ADDRESS_BYTE_SIZE
+                answer.data = ipv6ToBytes(data)
 
             header.questionsCount = 1
             header.nameServersCount = 0
@@ -90,10 +105,10 @@ class DNS:
                 if not staticVlan.allows(clientIp):
                     continue
 
-                if (ip := staticVlan.search(qname)) and qtype == QTYPE.A:
+                if (target := staticVlan.search(qname, qtype)):
                     self.logger.log(
-                        f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{ip}" to {fmtClientAddress} asking for {qname}')
-                    responseBytes = assembleResponse(ip)
+                        f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
+                    responseBytes = assembleResponse(target, qtype)
 
                     try:
                         self.socket.sendto(responseBytes, clientAddress)
@@ -126,18 +141,17 @@ class DNS:
                         self.logger.log(f'{strRequestId} | blocking external access from vlan `{staticVlan.name}` to {fmtClientAddress} asking for {qname} [{QTYPE.codeToName(qtype)}] ')
                         return
 
-        if qtype == QTYPE.A: # A -> IPv4 query
-            if ip := self.conf.search(qname):
-                self.logger.log(f'{strRequestId} | giving static answer "{ip}" to {fmtClientAddress} asking for {qname} [A]')
-                responseBytes = assembleResponse(ip)
+        if (target := self.conf.search(qname, qtype)):
+            self.logger.log(f'{strRequestId} | giving static answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
+            responseBytes = assembleResponse(target, qtype)
 
-                try:
-                    self.socket.sendto(responseBytes, clientAddress)
+            try:
+                self.socket.sendto(responseBytes, clientAddress)
 
-                except:
-                    self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
+            except:
+                self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
-                return
+            return
 
         if qtype in self.qtypes:
             if responseBytes := self.caches[qtype].getForId(qname, requestId):

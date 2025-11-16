@@ -3,16 +3,20 @@ import sys
 import yaml
 import re
 from StaticVlan import StaticVlan
+from StaticRemap import StaticRemap
+from qtype import QTYPE
+
 
 class Conf:
     def __init__(self, confPath: str):
         self.confPath = confPath
+        self.blocklist = {}
         self.remaps = {}
         self.staticVlans = []
 
         self.__parseConf()
         self.__parseStatic()
-        self.__parseAdlists()
+        self.__parseBlocklists()
 
     def __parseConf(self):
         with open(self.confPath, 'r') as file:
@@ -60,14 +64,18 @@ class Conf:
             if key.startswith('_vlan'):
                 self.staticVlans.append(StaticVlan(self.static.pop(key), key))
 
-    def __parseAdlists(self):
+            else:
+                self.remaps[key] = StaticRemap.fromYaml(key, self.static.pop(key))
+
+
+    def __parseBlocklists(self):
         for filePath in self.blocklists:
             if not filePath:
                 continue
 
-            self.__parseAdlistFile(filePath)
+            self.__parseBlocklistFile(filePath)
 
-    def __parseAdlistFile(self, filePath: str):
+    def __parseBlocklistFile(self, filePath: str):
         with open(filePath, 'r') as file:
             content = file.read()
 
@@ -81,23 +89,23 @@ class Conf:
             hostname = chunks[1].strip()
             hostnameRegex = r'{}'.format(hostname.replace('.', r'\.').replace('*', '.*'))
 
-            self.remaps[hostnameRegex] = ip
+            self.blocklist[hostnameRegex] = ip
 
-    def search(self, target: str) -> str|None:
-        ip = self.static.get(target)
-        if ip is not None:
-            return ip
+    def search(self, target: str, qtype: int) -> str|None:
+        remap = self.remaps.get(target)
+        if remap is not None:
+            return remap.has(target, qtype)
 
         # some programs add `.localhost` when not TLD is provided
-        ip = self.static.get(target.removesuffix('.localhost'))
-        if ip is not None:
-            return ip
+        remap = self.remaps.get(target.removesuffix('.localhost'))
+        if remap is not None:
+            return remap.has(target, qtype)
 
         # some programs add `.local` when not TLD is provided
-        ip  = self.static.get(target.removesuffix('.local'))
-        if ip is not None:
-            return ip
+        remap  = self.remaps.get(target.removesuffix('.local'))
+        if remap is not None:
+            return remap.has(target, qtype)
 
-        for pattern, ip in self.remaps.items():
+        for pattern, ip in self.blocklist.items():
             if re.match(pattern, target):
                 return ip
