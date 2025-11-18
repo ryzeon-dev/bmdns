@@ -1,5 +1,6 @@
 import sys
 import time
+
 from constants import *
 
 class Logger:

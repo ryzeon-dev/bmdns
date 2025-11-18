@@ -1,9 +1,9 @@
+import time
+from threading import Semaphore, Thread
+
 from DnsResponse import DnsResponse
 from utils import decodeName
 from constants import *
-
-from threading import Semaphore, Thread
-import time
 
 class Cache:
     def __init__(self, qtype):

@@ -1,5 +1,5 @@
 import sys
-import re
+
 from StaticRemap import StaticRemap
 
 def ipToU32(ip):

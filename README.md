@@ -1,5 +1,5 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.0.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.1.0-16a085">
 <img alt="Version Badge" src="https://img.shields.io/badge/release-v4.0.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
@@ -26,6 +26,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
   - [Windows](#windows-2)
 - [Configuration](#configuration)
   - [Static Remaps](#static-remaps)
+  - [VLANs](#vlans)
   - [Root Servers](#root-servers)
   - [Blocklists](#blocklists)
 - [Cascading Search](#cascading-search)
@@ -39,7 +40,12 @@ It should work on FreeBSD and MacOS systems, but it is untested.
 The `install`/`update`/`uninstall` scripts are specifically written for GNU/Linux and Windows, any attempt of running them in other OS may lead to errors and unexpected behaviour. 
 
 ## OS requirements
-Compilation requires `python3 python3-venv python3-pip` packages to be installed 
+Compilation requires `python3 python3-venv python3-pip` packages to be installed. Install them using your OS's package manager
+
+e.g.
+```commandline
+sudo apt update && sudo apt install -y python3 python3-venv python3-pip
+```
 
 ## Log Analyzer - BMDLA
 [BMDLA](https://github.com/ryzeon-dev/bmdla) is the software specifically written to analyze the log files from BMDNS. \
@@ -67,7 +73,6 @@ wget https://github.com/ryzeon-dev/bmdns/releases/download/v4.0.0/bmdns_4.0.0_am
 Warning: the executables were compiled and packed into .deb on Debian 13, the package might not work on older Debian releases (because of glibc versions)  
 
 ### Windows
-
 On Windows run the installation script as an administrator:
 ```commandline
 .\scripts\install.bat
@@ -158,7 +163,7 @@ static:
   my-server: 192.168.0.2
 ```
 
-To set multiple resolutions for the same domain name, specify as follows \
+To set multiple resolution types for the same domain name, specify as follows 
 ```yaml
 static:
     my-server:
@@ -174,6 +179,17 @@ static:
     my-server:
       A: 192.168.0.2
       AAAA: fe80:deeb::beef
+```
+
+TXT records can be multiple. To set more than one record, write them in a yaml list after the TXT identifier
+```yaml
+static:
+  my-server:
+    A: 192.168.0.2
+    TXT:
+      - key=value
+      - my_verification_string
+      - very_important_dns_txt_record
 ```
 
 <br/>

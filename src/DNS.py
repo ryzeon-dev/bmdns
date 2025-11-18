@@ -57,32 +57,6 @@ class DNS:
         self.logger.alert(f'{strRequestId} | {fmtClientAddress} asks for {qname} [{QTYPE.codeToName(qtype)}]')
 
         def assembleResponse(data, type=QTYPE.A):
-            answer = DnsRecord()
-
-            # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
-            answer.name = QNAME_STD_POINTER  #
-            answer.type = type
-
-            answer.class_ = question.qclass
-            answer.ttl = RECORD_MAX_TTL
-
-            if qtype == QTYPE.A:
-                answer.dataSize = IP_ADDRESS_BYTE_SIZE
-                answer.data = ipToBytes(data)
-
-            elif qtype == QTYPE.TXT:
-                answer.data = struct.pack("B", len(data)) + data.encode()
-                answer.dataSize = len(answer.data)
-
-            elif qtype == QTYPE.CNAME:
-                encodedName = encodeName(data)
-                answer.dataSize = len(encodedName)
-                answer.data = encodedName
-
-            elif qtype == QTYPE.AAAA:
-                answer.dataSize = IPv6_ADDRESS_BYTE_SIZE
-                answer.data = ipv6ToBytes(data)
-
             header.questionsCount = 1
             header.nameServersCount = 0
             header.additionalsCount = 0
@@ -92,10 +66,64 @@ class DNS:
             header.qr = QR_RESPONSE
             header.flagRA = True  # required by some clients
 
+            if qtype == QTYPE.TXT:
+                answerBytes = b''
+                if isinstance(data, list):
+                    header.answersCount = len(data)
+
+                    for record in data:
+                        dnsRecord = DnsRecord()
+                        dnsRecord.name = QNAME_STD_POINTER
+                        dnsRecord.type = type
+
+                        dnsRecord.class_ = question.qclass
+                        dnsRecord.ttl = RECORD_MAX_TTL
+
+                        dnsRecord.data = struct.pack("B", len(record)) + record.encode()
+                        dnsRecord.dataSize = len(dnsRecord.data)
+                        answerBytes += dnsRecord.toBytes()
+
+                else:
+                    dnsRecord = DnsRecord()
+                    dnsRecord.name = QNAME_STD_POINTER
+                    dnsRecord.type = type
+
+                    dnsRecord.class_ = question.qclass
+                    dnsRecord.ttl = RECORD_MAX_TTL
+
+                    dnsRecord.data = struct.pack("B", len(data)) + data.encode()
+                    dnsRecord.dataSize = len(dnsRecord.data)
+                    answerBytes += dnsRecord.toBytes()
+
+            else:
+                answer = DnsRecord()
+
+                # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
+                answer.name = QNAME_STD_POINTER
+                answer.type = type
+
+                answer.class_ = question.qclass
+                answer.ttl = RECORD_MAX_TTL
+
+                if qtype == QTYPE.A:
+                    answer.dataSize = IP_ADDRESS_BYTE_SIZE
+                    answer.data = ipToBytes(data)
+
+                elif qtype == QTYPE.CNAME:
+                    encodedName = encodeName(data)
+                    answer.dataSize = len(encodedName)
+                    answer.data = encodedName
+
+                elif qtype == QTYPE.AAAA:
+                    answer.dataSize = IPv6_ADDRESS_BYTE_SIZE
+                    answer.data = ipv6ToBytes(data)
+
+                answerBytes = answer.toBytes()
+
             responseBytes = b''
             responseBytes += header.toBytes()
             responseBytes += question.toBytes()
-            responseBytes += answer.toBytes()
+            responseBytes += answerBytes
 
             return responseBytes
 
@@ -105,9 +133,9 @@ class DNS:
                 if not staticVlan.allows(clientIp):
                     continue
 
+                # searches for the domain and qtype in the vlan configuration
                 if (target := staticVlan.search(qname, qtype)):
-                    self.logger.log(
-                        f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
+                    self.logger.log(f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
                     responseBytes = assembleResponse(target, qtype)
 
                     try:
@@ -119,7 +147,7 @@ class DNS:
                     return
 
                 else:
-                    # if the vlan is configured to lock external access, server refusal sent back
+                    # if the vlan is configured to lock external access, server refusal is sent back
                     if staticVlan.blockExternal:
                         responseHeader = DnsHeader()
 
@@ -141,6 +169,7 @@ class DNS:
                         self.logger.log(f'{strRequestId} | blocking external access from vlan `{staticVlan.name}` to {fmtClientAddress} asking for {qname} [{QTYPE.codeToName(qtype)}] ')
                         return
 
+        # searches for a static remap
         if (target := self.conf.search(qname, qtype)):
             self.logger.log(f'{strRequestId} | giving static answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
             responseBytes = assembleResponse(target, qtype)
@@ -153,6 +182,7 @@ class DNS:
 
             return
 
+        # searches in cache
         if qtype in self.qtypes:
             if responseBytes := self.caches[qtype].getForId(qname, requestId):
                 self.logger.log(f'{strRequestId} | giving cached {QTYPE.codeToName(qtype)} answer to {fmtClientAddress} asking for {qname}')
@@ -165,6 +195,7 @@ class DNS:
 
                 return
 
+        # asks configured root servers
         for server in self.conf.rootServers:
             responseBytes = self.askRootServer(server, bytes)
 

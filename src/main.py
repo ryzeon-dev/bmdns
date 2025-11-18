@@ -1,10 +1,10 @@
-from Conf import Conf
-from DNS import DNS
-
 import sys
 import os
 
-VERSION = 'v4.0.0'
+from Conf import Conf
+from DNS import DNS
+
+VERSION = 'v4.1.0'
 
 if __name__ == '__main__':
     if os.sys.platform == 'linux':

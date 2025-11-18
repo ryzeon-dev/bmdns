@@ -1,11 +1,9 @@
 import sys
-
 import yaml
 import re
+
 from StaticVlan import StaticVlan
 from StaticRemap import StaticRemap
-from qtype import QTYPE
-
 
 class Conf:
     def __init__(self, confPath: str):
@@ -66,7 +64,6 @@ class Conf:
 
             else:
                 self.remaps[key] = StaticRemap.fromYaml(key, self.static.pop(key))
-
 
     def __parseBlocklists(self):
         for filePath in self.blocklists:

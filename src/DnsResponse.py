@@ -1,9 +1,9 @@
+import time
+
 from DnsHeader import DnsHeader
 from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
 from utils import u16ToBytes
-
-import time
 
 class DnsResponse:
     def __init__(self, bytes):
