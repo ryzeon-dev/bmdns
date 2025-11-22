@@ -82,7 +82,7 @@ class StaticRemap:
                 TXT=remap.get('TXT')
             )
 
-        raise TypeError('Static blocklist can either be str or dict')
+        raise TypeError(f'Static remap can either be str or dict (raised while parsing static configuration for "{domain}")')
 
     def __repr__(self):
         repr = f'StaticRemap( domain: {self.qname}'

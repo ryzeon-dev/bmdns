@@ -3,8 +3,9 @@ import os
 
 from Conf import Conf
 from DNS import DNS
+from utils import logFatalError
 
-VERSION = 'v4.1.0'
+VERSION = 'v4.2.0'
 
 if __name__ == '__main__':
     if os.sys.platform == 'linux':
@@ -15,18 +16,18 @@ if __name__ == '__main__':
         CONF_PATH = os.path.join(programFiles, 'bmdns', 'conf.yaml')
 
     else:
-        print('Error: unrecognized os')
+        logFatalError('Fatal error: unrecognized os')
         sys.exit(1)
 
     try:
         conf = Conf(CONF_PATH)
 
     except FileNotFoundError:
-        print('Fatal: execution attempt without proper install (conf file not found)')
+        logFatalError('Fatal error: execution attempt without proper install (conf file not found)')
         sys.exit(1)
 
     except Exception as e:
-        print(f'Fatal: {e}')
+        logFatalError(f'Fatal error: {e}')
         sys.exit(1)
 
     try:
@@ -34,9 +35,9 @@ if __name__ == '__main__':
         dns.listen()
 
     except PermissionError:
-        print('Fatal: unsufficient permissions while attempting to run')
+        logFatalError('Fatal error: unsufficient permissions while attempting to run')
         sys.exit(1)
 
     except Exception as e:
-        print(f'Fatal: {e}')
+        logFatalError(f'Fatal error: {e}')
         sys.exit(1)

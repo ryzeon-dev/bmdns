@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.1.0-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v4.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.2.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v4.2.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -31,6 +31,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
   - [Blocklists](#blocklists)
 - [Cascading Search](#cascading-search)
 - [Log](#log)
+- [Error Log](#error-log)
 
 
 ## Supported OS
@@ -61,7 +62,7 @@ The installation script
 - compiles the software
 - creates the required directories (`/etc/bmdns` and `/var/log/bmdns`)
 - copies the default configuration file into `/etc/bmdns/conf.yaml`
-- installs the compiled binary (into `/usr/local/bin`) 
+- installs the compiled binary (into `/usr/local/bin`)
 - adds `bmdns.service` to systemd services 
 
 ### Debian
@@ -132,6 +133,8 @@ On Windows run the uninstallation script as an administrator
 Configuration involves editing:
 - `/etc/bmdns/conf.yaml` file on linux systems
 - `%PROGRAMFILES%/bmdns/conf.yaml` on windows systems
+
+Rember to restart the service after editing the configuration file. 
 
 A sample configuration file is
 ```yaml
@@ -277,3 +280,10 @@ If log-persistency is set to `false`, BMDNS writes its log in the file `LOG_DIR/
 The log is wiped at every restart of the service  
 
 If log-persistency is set to `true`, BMDNS will create a new file at every restart of the service, naming it `bmdns_[$date]_[$time].log`.
+
+## Error Log
+Error log, which is written only if BMDNS is unable to start, is written into:
+- `/var/log/bmdns/bmdns_error.log` directory on linux systems
+- `%PROGRAMFILES%/bmdns/log/bmdns_error.log` directory on windows systems
+
+The text contained into the file describes the specific issue with BMDNS startup; it could be a configuration error, insufficiente permissions or unrecognized operative system 

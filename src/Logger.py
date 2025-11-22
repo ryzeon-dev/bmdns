@@ -2,6 +2,7 @@ import sys
 import time
 
 from constants import *
+from utils import fmtNow
 
 class Logger:
     def __init__(self, persistentLog=False, doLog=True):
@@ -10,7 +11,7 @@ class Logger:
             return
 
         if persistentLog:
-            fileName = 'bmdns_' + self.__fmtNow().replace(' ', '_').replace('/', '-').replace(':', '-') + '.log'
+            fileName = 'bmdns_' + fmtNow().replace(' ', '_').replace('/', '-').replace(':', '-') + '.log'
             self.filePath = os.path.join(LOG_DIR, fileName)
 
         else:
@@ -28,22 +29,17 @@ class Logger:
         with open(self.filePath, 'w') as file:
             file.write('')
 
-    @staticmethod
-    def __fmtNow():
-        now = time.localtime()
-        return f'{now.tm_year}/{now.tm_mon}/{now.tm_mday} {now.tm_hour}:{now.tm_min}:{now.tm_sec}'
-
     def alert(self, text):
         if self.doLog:
-            print(f'[!] {self.__fmtNow()} | {text}', file=self._file)
+            print(f'[!] {fmtNow()} | {text}', file=self._file)
             self._file.flush()
 
     def log(self, text):
         if self.doLog:
-            print(f'[*] {self.__fmtNow()} | {text}', file=self._file)
+            print(f'[*] {fmtNow()} | {text}', file=self._file)
             self._file.flush()
 
     def error(self, text):
         if self.doLog:
-            print(f'[x] {self.__fmtNow()} | {text}', file=self._file)
+            print(f'[x] {fmtNow()} | {text}', file=self._file)
             self._file.flush()

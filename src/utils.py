@@ -1,4 +1,8 @@
 import struct
+import time
+import os
+from constants import LOG_DIR
+
 
 def bytesToU16(bytes):
     return struct.unpack('!H', bytes[0:2])[0]
@@ -92,3 +96,13 @@ def ipv6ToBytes(ip):
         bytes += u16ToBytes(u16Chunk)
 
     return bytes
+
+def fmtNow():
+    now = time.localtime()
+    return f'{now.tm_year}/{now.tm_mon}/{now.tm_mday} {now.tm_hour}:{now.tm_min}:{now.tm_sec}'
+
+def logFatalError(text):
+    now = fmtNow()
+
+    with open(os.path.join(LOG_DIR, 'bmdns_error.log'), 'w') as file:
+        file.write(f'{now} | {text}')

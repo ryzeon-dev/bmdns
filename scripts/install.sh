@@ -29,7 +29,7 @@ mkdir -p /var/log/bmdns
 touch /var/log/bmdns/bmdns.log
 
 cp ./conf/sample_conf.yaml /etc/bmdns/conf.yaml
-cp ./conf/bmdns.service /etc/systemd/system/bmdns.service
+cp ./conf/bmdns.service /etc/bmdns/bmdns.service
 
-systemctl enable bmdns.service
+systemctl enable /etc/bmdns/bmdns.service
 systemctl start bmdns.service

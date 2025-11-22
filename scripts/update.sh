@@ -31,7 +31,7 @@ if [ -f /etc/bmdns/bmdns.service ]; then
   rm /etc/bmdns/bmdns.service
 fi
 
-cp ./conf/bmdns.service /etc/systemd/system/bmdns.service
+cp ./conf/bmdns.service /etc/bmdns/bmdns.service
 
 systemctl daemon-reload
 systemctl restart bmdns

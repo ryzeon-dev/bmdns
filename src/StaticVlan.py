@@ -50,7 +50,7 @@ class StaticVlan:
 
     def __parseRemaps(self):
         for key, value in self.yamlRemaps.items():
-            self.remaps[key] = StaticRemap(key, value)
+            self.remaps[key] = StaticRemap.fromYaml(key, value)
 
     def __unpackVlanMask(self):
         ip = None
