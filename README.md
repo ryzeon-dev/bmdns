@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v4.2.0-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v4.2.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.0.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.0.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -68,7 +68,7 @@ The installation script
 ### Debian
 Run the following line in a dedicated directory
 ```commandline
-wget https://github.com/ryzeon-dev/bmdns/releases/download/v4.2.0/bmdns_4.2.0_amd64.deb && sudo dpkg -i ./bmdns_*_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
+wget https://github.com/ryzeon-dev/bmdns/releases/download/v5.0.0/bmdns_5.0.0_amd64.deb && sudo dpkg -i ./bmdns_5.0.0_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
 ```
 
 Warning: the executables were compiled and packed into .deb on Debian 13, the package might not work on older Debian releases (because of glibc versions)  
@@ -184,11 +184,13 @@ static:
       AAAA: fe80:deeb::beef
 ```
 
-TXT records can be multiple. To set more than one record, write them in a yaml list after the TXT identifier
+Every record can have multiple values. To set more than one record, write them in a yaml list after the type identifier
 ```yaml
 static:
   my-server:
-    A: 192.168.0.2
+    A: 
+      - 192.168.0.2
+      - 192.168.0.8
     TXT:
       - key=value
       - my_verification_string
@@ -216,6 +218,7 @@ static:
     __vlanmask: 192.168.1.0/24
     my-server: 192.168.1.2
 ```
+
 When creating a vlan space, a certain syntax is required:
 - a vlan name must start with `_vlan`, which tells the configuration parser to create a new vlan static space
 - inside the just created vlan object, create an object named `__vlanmask` with `<ip-address>/<cidr>` as value
@@ -233,7 +236,6 @@ static:
     __vlankmask: 192.168.0.0/24
     __block-external: yes
 ```
-
 
 ### Root Servers
 At least one root server is required for BMDNS to work properly. \
@@ -283,7 +285,7 @@ If log-persistency is set to `true`, BMDNS will create a new file at every resta
 
 ## Error Log
 Error log, which is written only if BMDNS is unable to start, is written into:
-- `/var/log/bmdns/bmdns_error.log` directory on linux systems
-- `%PROGRAMFILES%/bmdns/log/bmdns_error.log` directory on windows systems
+- `/var/log/bmdns/bmdns_error.log` file on linux systems
+- `%PROGRAMFILES%/bmdns/log/bmdns_error.log` file on windows systems
 
 The text contained into the file describes the specific issue with BMDNS startup; it could be a configuration error, insufficiente permissions or unrecognized operative system 

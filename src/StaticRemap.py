@@ -5,47 +5,46 @@ class StaticRemap:
     def __init__(self, qname=None, A=None, TXT=None, AAAA=None, CNAME=None):
         self.qname = qname
 
-        if A is not None:
-            if not isinstance(A, str):
-                raise TypeError(f'`A` record for `{qname}` must be a string')
-
-            if not validateIPv4(A):
-                raise ValueError(f'Invalid IPv4 `{A}` [A record] for `{qname}`')
+        self.validateRemap(
+            remap=A, qname=qname, remapType='A', validationFn=validateIPv4
+        )
         self.a = A
 
-        if AAAA is not None:
-            if not isinstance(AAAA, str):
-                raise TypeError(f'`AAAA` record for `{qname}` must be a string')
-
-            if not validateIPv6(AAAA):
-                raise ValueError(f'Invalid IPv6 `{AAAA}` [AAAAA record] for `{qname}`')
+        self.validateRemap(
+            remap=AAAA, qname=qname, remapType='AAAA', validationFn=validateIPv6
+        )
         self.aaaa = AAAA
 
-        if TXT is not None:
-            if isinstance(TXT, list):
-                types = list(set(type(entry) for entry in TXT))
-                if len(types) != 1 or types[0] != str:
-                    raise TypeError(f'`TXT` record for `{qname}` must either be a string or a list of strings')
-
-                for entry in TXT:
-                    if not validateTxtRecord(entry):
-                        raise ValueError(f'Invalid record `{entry}` [TXT record] for `{qname}`')
-
-            if isinstance(TXT, str):
-                if not validateTxtRecord(TXT):
-                    raise ValueError(f'Invalid record `{TXT}` [TXT record] for `{qname}`')
-
-            if not isinstance(TXT, str) and not isinstance(TXT, list):
-                raise TypeError(f'`TXT` record for `{qname}` must either be a string or a list of strings')
+        self.validateRemap(
+            remap=TXT, qname=qname, remapType='TXT', validationFn=validateTxtRecord
+        )
         self.txt = TXT
 
-        if CNAME is not None:
-            if not isinstance(CNAME, str):
-                raise TypeError(f'`CNAME` record for `{qname}` must be a string')
-        
-            if not validateDomainName(CNAME):
-                raise ValueError(f'Invalid CNAME `{CNAME}` [CNAME record] for `{qname}`')
+        self.validateRemap(
+            remap=CNAME, qname=qname, remapType='CNAME', validationFn=validateDomainName
+        )
         self.cname = CNAME
+
+    @staticmethod
+    def validateRemap(remap, qname, remapType, validationFn):
+        if remap is None:
+            return
+
+        if isinstance(remap, list):
+            types = list(set(type(entry) for entry in remap))
+            if len(types) != 1 or types[0] != str:
+                raise TypeError(f'`{remapType}` record for `{qname}` must either be a string or a list of strings')
+
+            for entry in remap:
+                if not validationFn(entry):
+                    raise ValueError(f'Invalid record `{entry}` [{remapType} record] for `{qname}`')
+
+        if isinstance(remap, str):
+            if not validationFn(remap):
+                raise ValueError(f'Invalid record `{remap}` [{remapType} record] for `{qname}`')
+
+        if not isinstance(remap, str) and not isinstance(remap, list):
+            raise TypeError(f'`{remapType}` record for `{qname}` must either be a string or a list of strings')
 
     def has(self, qname, type):
         if qname != self.qname:

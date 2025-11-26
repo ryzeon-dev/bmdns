@@ -5,7 +5,7 @@ from Conf import Conf
 from DNS import DNS
 from utils import logFatalError
 
-VERSION = 'v4.2.0'
+VERSION = 'v5.0.0'
 
 if __name__ == '__main__':
     if os.sys.platform == 'linux':

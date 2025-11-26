@@ -1,3 +1,4 @@
+from constants import RCODE_SERVER_REFUSAL
 from utils import *
 
 class DnsHeader:
@@ -83,3 +84,16 @@ class DnsHeader:
         bytes += u16ToBytes(self.additionalsCount)
 
         return bytes
+
+    @staticmethod
+    def makeRefusal(id):
+        self = DnsHeader()
+        self.id = id
+        self.qr = 1
+        self.flagAA = False
+        self.flagTC = False
+        self.flagRA = True
+        self.flagRD = True
+        self.rcode = RCODE_SERVER_REFUSAL
+        self.questionsCount = 1
+        return self

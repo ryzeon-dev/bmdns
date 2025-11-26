@@ -1,12 +1,12 @@
+import random
 import socket as sk
-import struct
 from _thread import start_new_thread
 
 from Cache import Cache
 from DnsHeader import DnsHeader
 from DnsQuestion import DnsQuestion
 from DnsRecord import DnsRecord
-from utils import ipToBytes, u16ToBytes, decodeName, encodeName, ipv6ToBytes
+from utils import u16ToBytes, decodeName
 from Logger import Logger
 from constants import *
 from qtype import QTYPE
@@ -61,63 +61,28 @@ class DNS:
             header.nameServersCount = 0
             header.additionalsCount = 0
 
-            # only one response for statically assigned addresses
             header.answersCount = 1
             header.qr = QR_RESPONSE
             header.flagRA = True  # required by some clients
 
-            if qtype == QTYPE.TXT:
-                answerBytes = b''
-                if isinstance(data, list):
-                    header.answersCount = len(data)
+            answerBytes = b''
+            if isinstance(data, list):
+                # in presence of multiple records of the same type, randomization has to be implemented
+                data = data.copy()
+                random.shuffle(data)
 
-                    for record in data:
-                        dnsRecord = DnsRecord()
-                        dnsRecord.name = QNAME_STD_POINTER
-                        dnsRecord.type = type
+                header.answersCount = len(data)
 
-                        dnsRecord.class_ = question.qclass
-                        dnsRecord.ttl = RECORD_MAX_TTL
-
-                        dnsRecord.data = struct.pack("B", len(record)) + record.encode()
-                        dnsRecord.dataSize = len(dnsRecord.data)
-                        answerBytes += dnsRecord.toBytes()
-
-                else:
-                    dnsRecord = DnsRecord()
-                    dnsRecord.name = QNAME_STD_POINTER
-                    dnsRecord.type = type
-
-                    dnsRecord.class_ = question.qclass
-                    dnsRecord.ttl = RECORD_MAX_TTL
-
-                    dnsRecord.data = struct.pack("B", len(data)) + data.encode()
-                    dnsRecord.dataSize = len(dnsRecord.data)
+                for record in data:
+                    dnsRecord = DnsRecord.makeFor(
+                        qtype=type, qclass=question.qclass, data=record
+                    )
                     answerBytes += dnsRecord.toBytes()
 
             else:
-                answer = DnsRecord()
-
-                # [0xC0, 0x0C] = [192, 12] is the standard pointer for referencing the qname in the question
-                answer.name = QNAME_STD_POINTER
-                answer.type = type
-
-                answer.class_ = question.qclass
-                answer.ttl = RECORD_MAX_TTL
-
-                if qtype == QTYPE.A:
-                    answer.dataSize = IP_ADDRESS_BYTE_SIZE
-                    answer.data = ipToBytes(data)
-
-                elif qtype == QTYPE.CNAME:
-                    encodedName = encodeName(data)
-                    answer.dataSize = len(encodedName)
-                    answer.data = encodedName
-
-                elif qtype == QTYPE.AAAA:
-                    answer.dataSize = IPv6_ADDRESS_BYTE_SIZE
-                    answer.data = ipv6ToBytes(data)
-
+                answer = DnsRecord.makeFor(
+                    qtype=type, qclass=question.qclass, data=data
+                )
                 answerBytes = answer.toBytes()
 
             responseBytes = b''
@@ -149,18 +114,7 @@ class DNS:
                 else:
                     # if the vlan is configured to lock external access, server refusal is sent back
                     if staticVlan.blockExternal:
-                        responseHeader = DnsHeader()
-
-                        responseHeader.id = header.id
-                        responseHeader.qr = 1
-
-                        responseHeader.flagAA = False
-                        responseHeader.flagTC = False
-                        responseHeader.flagRA = True
-                        responseHeader.flagRD = True
-
-                        responseHeader.rcode = RCODE_SERVER_REFUSAL
-                        responseHeader.questionsCount = 1
+                        responseHeader = DnsHeader.makeRefusal(header.id)
 
                         responseBytes = responseHeader.toBytes()
                         responseBytes += question.toBytes()

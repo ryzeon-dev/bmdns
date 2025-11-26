@@ -34,7 +34,7 @@ if [ "$?" != "0" ]; then
 fi
 
 echo 'Compiling python binary'
-pyinstaller --onefile ./src/main.py --name bare-metal-dns > /dev/null
+pyinstaller --onefile ./src/main.py --name bare-metal-dns &> /dev/null
 
 if [ "$?" != "0" ]; then
   echo 'Error while compiling. Aborting installation'

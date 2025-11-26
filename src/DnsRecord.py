@@ -1,3 +1,5 @@
+from constants import QNAME_STD_POINTER, RECORD_MAX_TTL, IP_ADDRESS_BYTE_SIZE, IPv6_ADDRESS_BYTE_SIZE
+from qtype import QTYPE
 from utils import *
 
 class DnsRecord:
@@ -51,6 +53,33 @@ class DnsRecord:
         bytes += self.data
 
         return bytes
+
+    @staticmethod
+    def makeFor(qtype, qclass, data, qname=QNAME_STD_POINTER, ttl=RECORD_MAX_TTL):
+        self = DnsRecord()
+        self.name = qname
+        self.type = qtype
+        self.class_ = qclass
+        self.ttl = ttl
+
+        if qtype == QTYPE.TXT:
+            self.data = struct.pack('B', len(data)) + data.encode()
+            self.dataSize = len(self.data)
+
+        elif qtype == QTYPE.A:
+            self.dataSize = IP_ADDRESS_BYTE_SIZE
+            self.data = ipToBytes(data)
+
+        elif qtype == QTYPE.AAAA:
+            self.dataSize = IPv6_ADDRESS_BYTE_SIZE
+            self.data = ipv6ToBytes(data)
+
+        elif qtype == QTYPE.CNAME:
+            encodedCname = encodeName(data)
+            self.dataSize = len(encodedCname)
+            self.data = encodedCname
+
+        return self
 
     def __repr__(self):
         return f'DnsRecord( {self.name = } ; {self.type = } ; {self.class_ = } ; {self.ttl = } ; {self.dataSize = } ; {self.data} )'
