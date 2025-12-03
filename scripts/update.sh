@@ -54,6 +54,7 @@ cp ./bin/bare-metal-dns /usr/local/bin
 mkdir -p /var/log/bmdns
 
 echo 'Stopping, updating and restarting systemd service'
+echo "5.1.0" > /etc/bmdns/VERSION
 systemctl stop bmdns
 cp ./conf/bmdns.service /etc/bmdns/bmdns.service
 systemctl daemon-reload

@@ -174,7 +174,8 @@ each one identified as a subdomain of the server name itself
 static:
   '*.my-server': 192.168.0.2
 ```
-Remember that yaml does not like "*" as the first character, so it is required to wrap the name with quotes or double-quotes
+Remember that yaml does not like "*" as the first character, so it is required to wrap the name with quotes or double-quotes. \
+Be aware that excessively wide wildcard remaps may shadow real world domain names: use this functionality carefully and at your own risk. 
 
 
 To set multiple resolution types for the same domain name, specify as follows 

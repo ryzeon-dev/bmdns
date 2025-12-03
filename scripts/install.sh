@@ -53,6 +53,7 @@ mkdir -p /var/log/bmdns
 echo 'Creating configuration and log files'
 touch /var/log/bmdns/bmdns.log
 cp ./conf/sample_conf.yaml /etc/bmdns/conf.yaml
+echo "5.1.0" > /etc/bmdns/VERSION
 
 echo 'Installing, enabling and starting systemd service'
 cp ./conf/bmdns.service /etc/bmdns/bmdns.service
