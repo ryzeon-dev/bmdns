@@ -140,7 +140,7 @@ class StaticRemapTest(unittest.TestCase):
         else:
             self.fail('test should have raised exception')
 
-    def test_wildcard_remap(self):
+    def test_stating_wildcard_remap_success(self):
         wildcardQname = '*local.lan'
         A = '192.168.0.2'
 
@@ -148,6 +148,29 @@ class StaticRemapTest(unittest.TestCase):
 
         self.assertEqual(remap.has(qname='machine.local.lan', type=QTYPE.A), A)
         self.assertEqual(remap.has(qname='local.lan', type=QTYPE.A), A)
+
+    def test_stating_wildcard_remap_fail(self):
+        wildcardQname = '*.local.lan'
+        A = '192.168.0.2'
+
+        remap = StaticRemap(qname=wildcardQname, A=A)
+        self.assertIsNone(remap.has(qname='local.lan', type=QTYPE.A))
+
+    def test_middleplace_wildcard_remap_success(self):
+        wildcardQname = 'analysis.*.lan'
+        TXT = 'page_type=analysis'
+
+        remap = StaticRemap(qname=wildcardQname, TXT=TXT)
+        self.assertEqual(remap.has('analysis.server.lan', QTYPE.TXT), TXT)
+
+    def test_lastplace_wildcard_remap_success(self):
+        wildcardQname = 'myserver.*'
+        A = '192.168.0.2'
+
+        remap = StaticRemap(qname=wildcardQname, A=A)
+
+        self.assertEqual(remap.has('myserver.com', QTYPE.A), A)
+        self.assertEqual(remap.has('myserver.net', QTYPE.A), A)
 
 #########################
 ### STATIC VLAN TESTS ###
