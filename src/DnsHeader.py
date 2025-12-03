@@ -1,4 +1,4 @@
-from constants import RCODE_SERVER_REFUSAL
+from constants import RCODE_SERVER_REFUSAL, QR_BIT, OPCODE_BITS, FLAG_AA_BIT, FLAG_TC_BIT, FLAG_RD_BIT, RCODE_BITS, FLAG_RA_BIT
 from utils import *
 
 class DnsHeader:
@@ -31,17 +31,17 @@ class DnsHeader:
         opcodeAndFlags = bytes[index]
         index += 1
 
-        self.qr = checkBitFlag(opcodeAndFlags, 0b10000000)
-        self.opcode = opcodeAndFlags & 0b01111000
-        self.flagAA = checkBitFlag(opcodeAndFlags, 0b00000100)
-        self.flagTC = checkBitFlag(opcodeAndFlags, 0b00000010)
-        self.flagRD = checkBitFlag(opcodeAndFlags, 0b00000001)
+        self.qr = checkBitFlag(opcodeAndFlags, QR_BIT)
+        self.opcode = opcodeAndFlags & OPCODE_BITS
+        self.flagAA = checkBitFlag(opcodeAndFlags, FLAG_AA_BIT)
+        self.flagTC = checkBitFlag(opcodeAndFlags, FLAG_TC_BIT)
+        self.flagRD = checkBitFlag(opcodeAndFlags, FLAG_RD_BIT)
 
         rcodeAndFlags = bytes[index]
         index += 1
 
-        self.flagRA = checkBitFlag(rcodeAndFlags, 0b10000000)
-        self.rcode = rcodeAndFlags & 0b00001111
+        self.flagRA = checkBitFlag(rcodeAndFlags, FLAG_RA_BIT)
+        self.rcode = rcodeAndFlags & RCODE_BITS
 
         self.questionsCount = bytesToU16(bytes[index:index+2])
         index += 2
@@ -63,19 +63,19 @@ class DnsHeader:
         bytes += u16ToBytes(self.id)
 
         opcodeAndFlags = 0
-        opcodeAndFlags |= 0b10000000 if self.qr else 0
-        opcodeAndFlags |= (self.opcode & 0b01111000)
-        opcodeAndFlags |= 0b00000100 if self.flagAA else 0
-        opcodeAndFlags |= 0b00000010 if self.flagTC else 0
-        opcodeAndFlags |= 0b00000001 if self.flagRD else 0
+        opcodeAndFlags |= QR_BIT if self.qr else 0
+        opcodeAndFlags |= (self.opcode & OPCODE_BITS)
+        opcodeAndFlags |= FLAG_AA_BIT if self.flagAA else 0
+        opcodeAndFlags |= FLAG_TC_BIT if self.flagTC else 0
+        opcodeAndFlags |= FLAG_RD_BIT if self.flagRD else 0
 
-        bytes += struct.pack('!B', opcodeAndFlags)
+        bytes += struct.pack(U8, opcodeAndFlags)
 
         rcodeAndFlags = 0
-        rcodeAndFlags |= 0b10000000 if self.flagRA else 0
-        rcodeAndFlags |= (self.rcode & 0b00001111)
+        rcodeAndFlags |= FLAG_RA_BIT if self.flagRA else 0
+        rcodeAndFlags |= (self.rcode & RCODE_BITS)
 
-        bytes += struct.pack('!B', rcodeAndFlags)
+        bytes += struct.pack(U8, rcodeAndFlags)
 
         bytes += u16ToBytes(self.questionsCount)
         bytes += u16ToBytes(self.answersCount)

@@ -6,6 +6,7 @@ port: 53
 
 logging: yes
 persistent-log: no
+color-log: yes
 
 static:
   me.local: 0.0.0.0

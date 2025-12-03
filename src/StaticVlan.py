@@ -46,14 +46,19 @@ class StaticVlan:
 
         self.yamlRemaps = conf
         self.remaps = {}
+        self.wildcardRemaps = []
         self.__parseRemaps()
 
     def __parseRemaps(self):
         for key, value in self.yamlRemaps.items():
-            self.remaps[key] = StaticRemap.fromYaml(key, value)
+            remap = StaticRemap.fromYaml(key, value)
+
+            if remap.regexQname is not None:
+                self.wildcardRemaps.append(remap)
+            else:
+                self.remaps[key] = remap
 
     def __unpackVlanMask(self):
-        ip = None
         self.cidr = 24
 
         if '/' in self.vlanMask:
@@ -86,3 +91,8 @@ class StaticVlan:
         remap = self.yamlRemaps.get(target.removesuffix('.local'))
         if remap is not None:
             return remap.has(target, qtype)
+
+        # searches for wildcard remaps
+        for wildcard in self.wildcardRemaps:
+            if remap := wildcard.has(target, qtype):
+                return remap

@@ -1,4 +1,5 @@
 import re
+from constants import TXT_RECORD_MAX_LENGTH
 
 def validateIPv4(ip):
     return re.fullmatch(
@@ -25,4 +26,4 @@ def validateDomainName(name):
     return False
 
 def validateTxtRecord(record):
-    return 0 <= len(record) <= 255
+    return 0 <= len(record) <= TXT_RECORD_MAX_LENGTH

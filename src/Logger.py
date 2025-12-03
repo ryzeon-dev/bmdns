@@ -1,12 +1,17 @@
 import sys
-import time
-
 from constants import *
 from utils import fmtNow
 
+RED = '\x1b[91m'
+GREEN = '\x1b[92m'
+YELLOW = '\x1b[93m'
+RESET = '\x1b[00m'
+
 class Logger:
-    def __init__(self, persistentLog=False, doLog=True):
+    def __init__(self, persistentLog=False, doLog=True, colorLog=True):
         self.doLog = doLog
+        self.colorLog = colorLog
+
         if not self.doLog:
             return
 
@@ -31,15 +36,18 @@ class Logger:
 
     def alert(self, text):
         if self.doLog:
-            print(f'[!] {fmtNow()} | {text}', file=self._file)
+            statusAndTimestamp = f'{YELLOW}[!] {fmtNow()} {RESET}' if self.colorLog else f'[!] {fmtNow()}'
+            print(f'{statusAndTimestamp} | {text}', file=self._file)
             self._file.flush()
 
     def log(self, text):
         if self.doLog:
-            print(f'[*] {fmtNow()} | {text}', file=self._file)
+            statusAndTimestamp = f'{GREEN}[*] {fmtNow()} {RESET}' if self.colorLog else f'[*] {fmtNow()}'
+            print(f'{statusAndTimestamp} | {text}', file=self._file)
             self._file.flush()
 
     def error(self, text):
         if self.doLog:
-            print(f'[x] {fmtNow()} | {text}', file=self._file)
+            statusAndTimestamp = f'{RED}[x] {fmtNow()} {RESET}' if self.colorLog else f'[x] {fmtNow()}'
+            print(f'{statusAndTimestamp} | {text}', file=self._file)
             self._file.flush()

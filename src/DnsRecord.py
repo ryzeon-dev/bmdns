@@ -1,4 +1,4 @@
-from constants import QNAME_STD_POINTER, RECORD_MAX_TTL, IP_ADDRESS_BYTE_SIZE, IPv6_ADDRESS_BYTE_SIZE
+from constants import QNAME_STD_POINTER, RECORD_MAX_TTL, IPv4_ADDRESS_BYTE_SIZE, IPv6_ADDRESS_BYTE_SIZE, U8, U16, U32
 from qtype import QTYPE
 from utils import *
 
@@ -63,11 +63,11 @@ class DnsRecord:
         self.ttl = ttl
 
         if qtype == QTYPE.TXT:
-            self.data = struct.pack('B', len(data)) + data.encode()
+            self.data = struct.pack(U8, len(data)) + data.encode()
             self.dataSize = len(self.data)
 
         elif qtype == QTYPE.A:
-            self.dataSize = IP_ADDRESS_BYTE_SIZE
+            self.dataSize = IPv4_ADDRESS_BYTE_SIZE
             self.data = ipToBytes(data)
 
         elif qtype == QTYPE.AAAA:

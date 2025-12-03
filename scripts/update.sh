@@ -53,12 +53,8 @@ cp ./bin/bare-metal-dns /usr/local/bin
 
 mkdir -p /var/log/bmdns
 
-echo
-if [ -f /etc/bmdns/bmdns.service ]; then
-  rm /etc/bmdns/bmdns.service
-fi
-
-echo 'Installing, enabling and starting systemd service'
+echo 'Stopping, updating and restarting systemd service'
+systemctl stop bmdns
 cp ./conf/bmdns.service /etc/bmdns/bmdns.service
 systemctl daemon-reload
 systemctl restart bmdns

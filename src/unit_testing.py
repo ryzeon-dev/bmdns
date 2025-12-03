@@ -5,6 +5,8 @@ from StaticRemap import StaticRemap
 from qtype import QTYPE
 from StaticVlan import StaticVlan
 from Conf import Conf
+from src.utils import checkBitFlag, ipToBytes, ipv6ToBytes
+from utils import encodeName, decodeName
 from validation import *
 
 ##########################
@@ -138,6 +140,15 @@ class StaticRemapTest(unittest.TestCase):
         else:
             self.fail('test should have raised exception')
 
+    def test_wildcard_remap(self):
+        wildcardQname = '*local.lan'
+        A = '192.168.0.2'
+
+        remap = StaticRemap(qname=wildcardQname, A=A)
+
+        self.assertEqual(remap.has(qname='machine.local.lan', type=QTYPE.A), A)
+        self.assertEqual(remap.has(qname='local.lan', type=QTYPE.A), A)
+
 #########################
 ### STATIC VLAN TESTS ###
 #########################
@@ -253,6 +264,39 @@ class ValidationTests(unittest.TestCase):
 
     def test_cname_fail(self):
         self.assertFalse(validateDomainName('wrong_domain.name.a'))
+
+##################
+### UTILS TEST ###
+##################
+
+class UtilsTests(unittest.TestCase):
+    def test_encode_name(self):
+        name = 'host.name.tld'
+        encoded = encodeName(name)
+
+        self.assertEqual(encoded, b'\x04host\x04name\x03tld\x00')
+
+    def test_decode_name(self):
+        encoded = b'\x04host\x04name\x03tld\x00'
+        decoded = decodeName(encoded, 0)
+
+        self.assertEqual(decoded, 'host.name.tld')
+
+        encoded = b'\x01\x02\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x04host\x04name\x03tld\x00\x00\x00\x00\x01\xc0\x0c\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        decoded = decodeName(encoded, 31)
+        self.assertEqual(decoded, 'host.name.tld')
+
+    def test_check_bit_flag(self):
+        self.assertTrue(checkBitFlag(0b10100101, 0b00100000))
+        self.assertFalse(checkBitFlag(0, 0b01000000))
+
+    def test_ipv4_to_bytes(self):
+        self.assertEqual(ipToBytes('127.0.0.1'), b'\x7F\x00\x00\x01')
+        self.assertEqual(ipToBytes('192.168.64.1'), b'\xC0\xA8\x40\x01')
+
+    def test_ipv6_to_bytes(self):
+        self.assertEqual(ipv6ToBytes('ffee:beef::deeb'), b'\xff\xee\xbe\xef\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xde\xeb')
+        self.assertEqual(ipv6ToBytes('fe80:deb:beef::beef:deb'), b'\xfe\x80\r\xeb\xbe\xef\x00\x00\x00\x00\x00\x00\xbe\xef\r\xeb')
 
 if __name__ == '__main__':
     unittest.main()

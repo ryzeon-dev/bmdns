@@ -14,7 +14,7 @@ from qtype import QTYPE
 class DNS:
     def __init__(self, conf):
         self.conf = conf
-        self.logger = Logger(self.conf.persistentLog, self.conf.logging)
+        self.logger = Logger(self.conf.persistentLog, self.conf.logging, self.conf.colorLog)
 
         self.useStaticVlans = self.conf.staticVlans != []
 

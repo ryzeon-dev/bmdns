@@ -1,20 +1,19 @@
 import struct
 import time
 import os
-from constants import LOG_DIR
-
+from constants import LOG_DIR, U8, U16, U32, QNAME_POINTER_FLAG, QNAME_REVERSE_POINTER_FLAG
 
 def bytesToU16(bytes):
-    return struct.unpack('!H', bytes[0:2])[0]
+    return struct.unpack(U16, bytes[0:2])[0]
 
 def u16ToBytes(value):
-    return struct.pack('!H', value)
+    return struct.pack(U16, value)
 
 def bytesToU32(bytes):
-    return struct.unpack('!I', bytes[0:4])[0]
+    return struct.unpack(U16, bytes[0:4])[0]
 
 def u32ToBytes(value):
-    return struct.pack('!I', value)
+    return struct.pack(U32, value)
 
 def decodeName(fullBytes, startIndex):
     index = startIndex
@@ -23,8 +22,8 @@ def decodeName(fullBytes, startIndex):
     while ((size := fullBytes[index]) != 0):
         index += 1
 
-        if size & 0b11000000:
-            pointer = ((size & 0b00111111) << 8) | fullBytes[index]
+        if size & QNAME_POINTER_FLAG:
+            pointer = ((size & QNAME_REVERSE_POINTER_FLAG) << 8) | fullBytes[index]
 
             name = decodeName(fullBytes, pointer)
             return name
@@ -45,7 +44,7 @@ def encodeName(name):
     encoded = b''
 
     for chunk in splitName:
-        encoded += struct.pack('!B', len(chunk))
+        encoded += struct.pack(U8, len(chunk))
         encoded += chunk.encode()
 
     encoded += b'\x00'
@@ -59,7 +58,7 @@ def getNameBytes(bytes):
     firstSize = bytes[index]
 
     # 0b11000000 = 0xC0 = 192 pointer signaler in byte stream
-    if firstSize & 0b11000000:
+    if firstSize & QNAME_POINTER_FLAG:
         name = bytes[index:index + 2]
 
     else:
@@ -76,7 +75,7 @@ def ipToBytes(ip):
     bytes = b''
 
     for chunk in ip.split('.'):
-        bytes += struct.pack('!B', int(chunk))
+        bytes += struct.pack(U8, int(chunk))
 
     return bytes
 

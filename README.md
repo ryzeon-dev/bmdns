@@ -166,6 +166,17 @@ static:
   my-server: 192.168.0.2
 ```
 
+Wildcard static resolution is supported, and only requires the user to add a "*" in the position associated with the wildcard.
+
+e.g. you have a server named `my-server` with ip address `192.168.0.2` wich provides multiple web services, \ 
+each one identified as a subdomain of the server name itself
+```yaml
+static:
+  '*.my-server': 192.168.0.2
+```
+Remember that yaml does not like "*" as the first character, so it is required to wrap the name with quotes or double-quotes
+
+
 To set multiple resolution types for the same domain name, specify as follows 
 ```yaml
 static:

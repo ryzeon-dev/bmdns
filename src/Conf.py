@@ -10,6 +10,7 @@ class Conf:
         self.confPath = confPath
         self.blocklist = {}
         self.remaps = {}
+        self.wildcardRemaps = []
         self.staticVlans = []
 
         self.__parseConf()
@@ -55,6 +56,11 @@ class Conf:
         if self.logging is None:
             self.logging = True
 
+        # if no preference is specified (most probably due to an old configuration file), colored logging is asserted as true
+        self.colorLog = yconf.get('color-log')
+        if self.colorLog is None:
+            self.colorLog = True
+
     def __parseStatic(self):
         keys = list(self.static.keys())
 
@@ -63,7 +69,13 @@ class Conf:
                 self.staticVlans.append(StaticVlan(self.static.pop(key), key))
 
             else:
-                self.remaps[key] = StaticRemap.fromYaml(key, self.static.pop(key))
+                remap = StaticRemap.fromYaml(key, self.static.pop(key))
+
+                if remap.regexQname is not None:
+                    self.wildcardRemaps.append(remap)
+
+                else:
+                    self.remaps[key] = remap
 
     def __parseBlocklists(self):
         for filePath in self.blocklists:
@@ -102,6 +114,11 @@ class Conf:
         remap  = self.remaps.get(target.removesuffix('.local'))
         if remap is not None:
             return remap.has(target, qtype)
+
+        # searches for wildcard remaps
+        for wildcard in self.wildcardRemaps:
+            if remap := wildcard.has(target, qtype):
+                return remap
 
         for pattern, ip in self.blocklist.items():
             if re.match(pattern, target):

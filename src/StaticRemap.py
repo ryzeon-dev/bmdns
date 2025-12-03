@@ -1,9 +1,14 @@
 from qtype import QTYPE
 from validation import *
+import re
 
 class StaticRemap:
     def __init__(self, qname=None, A=None, TXT=None, AAAA=None, CNAME=None):
         self.qname = qname
+
+        self.regexQname = None
+        if '*' in self.qname:
+            self.regexQname = qname.replace('.', '\\.').replace('*', '.*')
 
         self.validateRemap(
             remap=A, qname=qname, remapType='A', validationFn=validateIPv4
@@ -47,8 +52,13 @@ class StaticRemap:
             raise TypeError(f'`{remapType}` record for `{qname}` must either be a string or a list of strings')
 
     def has(self, qname, type):
-        if qname != self.qname:
-            return None
+        if self.regexQname is not None:
+            if re.fullmatch(self.regexQname, qname) is None:
+                return None
+
+        else:
+            if qname != self.qname:
+                return None
 
         if type == QTYPE.A:
             return self.a
