@@ -5,8 +5,8 @@ import re
 
 from StaticVlan import StaticVlan
 from StaticRemap import StaticRemap
-from src.utils import logFatalError
-from src.validation import validateIPv4
+from utils import logFatalError
+from validation import validateIPv4
 
 
 class Conf:
@@ -74,7 +74,8 @@ class Conf:
             logFatalError('Fatal: `blocklists` field not found')
             sys.exit(1)
 
-        if not isinstance(self.blocklists, list) or any(map(lambda e: type(e) != str, self.blocklists)):
+        # empty list in yaml is parsed as `[None]`
+        if not isinstance(self.blocklists, list) or (self.blocklists != [None] and any(map(lambda e: type(e) != str, self.blocklists))):
             logFatalError(f'Fatal: `blocklists` field must contain a list of strings')
             sys.exit(1)
 

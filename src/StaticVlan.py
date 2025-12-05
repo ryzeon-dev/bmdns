@@ -1,8 +1,8 @@
 import sys
 
 from StaticRemap import StaticRemap
-from src.utils import logFatalError
-from src.validation import validateIPv4, validateVlanMask
+from utils import logFatalError
+from validation import validateIPv4, validateVlanMask
 
 
 def ipToU32(ip):

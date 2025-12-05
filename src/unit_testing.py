@@ -264,6 +264,7 @@ blocklists:
 
         conf = Conf(fileName)
 
+
         self.assertEqual(conf.host, '0.0.0.0')
         self.assertEqual(conf.port, 53)
         self.assertEqual(conf.logging, True)
