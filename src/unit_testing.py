@@ -215,6 +215,20 @@ class StaticVlanTest(unittest.TestCase):
         else:
             self.fail('Test should have raised SystemExit')
 
+    def test_from_dict_with_exclusions(self):
+        vlan = StaticVlan(
+            name='_vlan0',
+            conf={
+                '__vlanmask': '192.168.0.0/24',
+                '__exclude': ['192.168.0.250', '192.168.0.251'],
+                'qname': '192.168.0.2',
+            }
+        )
+
+        self.assertTrue(vlan.allows('192.168.0.55'))
+        self.assertFalse(vlan.allows('192.168.0.250'))
+        self.assertFalse(vlan.allows('10.0.0.1'))
+
 ##################
 ### CONF TESTS ###
 ##################
@@ -287,6 +301,14 @@ class ValidationTests(unittest.TestCase):
 
     def test_cname_fail(self):
         self.assertFalse(validateDomainName('wrong_domain.name.a'))
+
+    def test_vlanmask_success(self):
+        self.assertTrue(validateVlanMask('192.168.0.1/24'))
+        self.assertTrue(validateVlanMask('192.168.0.1'))
+
+    def test_vlanmask_fail(self):
+        self.assertFalse(validateVlanMask('192.168.256.1/24'))
+        self.assertFalse(validateVlanMask('192.168.0.1/55'))
 
 ##################
 ### UTILS TEST ###

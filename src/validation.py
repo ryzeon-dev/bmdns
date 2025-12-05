@@ -27,3 +27,9 @@ def validateDomainName(name):
 
 def validateTxtRecord(record):
     return 0 <= len(record) <= TXT_RECORD_MAX_LENGTH
+
+def validateVlanMask(mask):
+    return re.fullmatch(
+        '^((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])(\\/(3[1-2]|[1-2][0-9]|[0-9]))?$',
+        mask
+    ) is not None

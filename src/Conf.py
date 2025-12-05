@@ -1,9 +1,13 @@
+import os.path
 import sys
 import yaml
 import re
 
 from StaticVlan import StaticVlan
 from StaticRemap import StaticRemap
+from src.utils import logFatalError
+from src.validation import validateIPv4
+
 
 class Conf:
     def __init__(self, confPath: str):
@@ -23,32 +27,64 @@ class Conf:
 
         self.host = yconf.get('host')
         if self.host is None:
-            print('configuration error: `host` field not found')
+            logFatalError('Fatal: `host` field not found')
+            sys.exit(1)
+
+        if not isinstance(self.host, str):
+            logFatalError(f'Fatal: `host` field must be a string')
+            sys.exit(1)
+
+        if not validateIPv4(self.host):
+            logFatalError(f'Fatal: `host` field must be a valid IPv4')
             sys.exit(1)
 
         self.port = yconf.get('port')
         if self.port is None:
-            print('configuration error: `port` field not found')
+            logFatalError('Fatal: `port` field not found')
+            sys.exit(1)
+
+        if not isinstance(self.port, int):
+            logFatalError('Fatal: `port` field must contain an integer')
+            sys.exit(1)
+
+        if not (0 < self.port < 65536):
+            logFatalError('Fatal: `port` field must be a valid port number')
             sys.exit(1)
 
         self.static: dict = yconf.get('static')
         if self.static is None:
-            print('configuration error: `static` field not found')
+            logFatalError('Fatal: `static` field not found')
             sys.exit(1)
 
         self.rootServers = yconf.get('root-servers')
         if self.rootServers is None:
-            print('configuration error: `root-servers` field not found')
+            logFatalError('Fatal: `root-servers` field not found')
+            sys.exit(1)
+
+        if not isinstance(self.rootServers, list) or any(map(lambda e: type(e) != str, self.rootServers)):
+            logFatalError(f'Fatal: `root-servers` field must contain a list of strings')
+            sys.exit(1)
+
+        if any(map(lambda e: not validateIPv4(e), self.rootServers)):
+            logFatalError(f'Fatal: `root-servers` field must contain a list of valid IPv4 addresses')
             sys.exit(1)
 
         self.blocklists = yconf.get('blocklists')
         if self.blocklists is None:
-            print('configuration error: `blocklists` field not found')
+            logFatalError('Fatal: `blocklists` field not found')
+            sys.exit(1)
+
+        if not isinstance(self.blocklists, list) or any(map(lambda e: type(e) != str, self.blocklists)):
+            logFatalError(f'Fatal: `blocklists` field must contain a list of strings')
             sys.exit(1)
 
         self.persistentLog = yconf.get('persistent-log')
         if self.persistentLog is None:
-            print('configuration error: `persistent-log` field not found')
+            logFatalError('Fatal: `persistent-log` field not found')
+            sys.exit(1)
+
+        if not isinstance(self.persistentLog, bool):
+            logFatalError('Fatal: `persistent-log` field must contain a bool')
             sys.exit(1)
 
         # if no preference is specified (most probably due to an old configuration file), logging is asserted as true
@@ -56,10 +92,18 @@ class Conf:
         if self.logging is None:
             self.logging = True
 
+        if not isinstance(self.logging, bool):
+            logFatalError('Fatal: `logging` field must contain a bool')
+            sys.exit(1)
+
         # if no preference is specified (most probably due to an old configuration file), colored logging is asserted as true
         self.colorLog = yconf.get('color-log')
         if self.colorLog is None:
             self.colorLog = True
+
+        if not isinstance(self.colorLog, bool):
+            logFatalError('Fatal: `color-log` field must contain a bool')
+            sys.exit(1)
 
     def __parseStatic(self):
         keys = list(self.static.keys())
@@ -81,6 +125,10 @@ class Conf:
         for filePath in self.blocklists:
             if not filePath:
                 continue
+
+            if not os.path.exists(filePath):
+                logFatalError(f'Fatal: `{filePath}` blocklist file not found')
+                sys.exit(1)
 
             self.__parseBlocklistFile(filePath)
 

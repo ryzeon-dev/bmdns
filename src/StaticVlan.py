@@ -1,6 +1,9 @@
 import sys
 
 from StaticRemap import StaticRemap
+from src.utils import logFatalError
+from src.validation import validateIPv4, validateVlanMask
+
 
 def ipToU32(ip):
     chunks = ip.split('.')
@@ -32,15 +35,48 @@ class StaticVlan:
         self.name = name
 
         if '__vlanmask' not in conf:
-            print(f'`__vlanmask` not specified in `{name}` static vlan mapping', file=sys.stderr)
+            logFatalError(f'Fatal: `__vlanmask` not specified in `{name}` static vlan mapping')
             sys.exit(1)
 
         self.vlanMask = conf.pop('__vlanmask')
+        if not isinstance(self.vlanMask, str):
+            logFatalError(f'Fatal: `__vlanmask` field must contain a string (from `{name}` vlan configuration)')
+            sys.exit(1)
+
+        if not validateVlanMask(self.vlanMask):
+            logFatalError(f'Fatal: invalid `__vlanmask` for vlan `{name}`')
+            sys.exit(1)
 
         if '__block-external' in conf:
             self.blockExternal = conf.pop('__block-external')
+
+            if not isinstance(self.blockExternal, bool):
+                logFatalError(f'Fatal: `__block-external` field must contain a bool (from `{self.name}` vlan configuration)')
+                sys.exit(1)
+
         else:
             self.blockExternal = False
+
+        if '__exclude' in conf:
+            exclude = conf.pop('__exclude')
+
+            if isinstance(exclude, list):
+                if any(map(lambda e: type(e) != str, exclude)):
+                    logFatalError(f'Fatal: `__exclude` field can only contain a string or a list of strings (from `{self.name}` vlan exclusions)')
+                    sys.exit(1)
+                self.exclude = exclude
+
+            elif isinstance(exclude, str):
+                self.exclude = [exclude]
+
+            else:
+                logFatalError(f'Fatal: `__exclude` field can only contain a string or a list of strings (from `{self.name}` vlan exclusions)')
+                sys.exit(1)
+
+            self.exclude = exclude
+            self.__parseExclusions()
+        else:
+            self.exclude = set()
 
         self.__unpackVlanMask()
 
@@ -73,9 +109,20 @@ class StaticVlan:
         self.u32BaseIp = ipToU32(ip) & self.u32NetMask
         self.u32BrdIp = (self.u32BaseIp | (~self.u32NetMask)) & 0xFFFFFFFF
 
+    def __parseExclusions(self):
+        u32Exclude = set()
+
+        for exclusion in self.exclude:
+            if not validateIPv4(exclusion):
+                logFatalError(f'Fatal: `{exclusion}` is not a valid IPv4 (from `{self.name}` vlan exclusions)')
+                sys.exit(1)
+
+            u32Exclude.add(ipToU32(exclusion))
+        self.exclude = u32Exclude
+
     def allows(self, ip):
         u32Ip = ipToU32(ip)
-        return self.u32BaseIp < u32Ip < self.u32BrdIp
+        return self.u32BaseIp < u32Ip < self.u32BrdIp and u32Ip not in self.exclude
 
     def search(self, target, qtype):
         remap = self.remaps.get(target)
