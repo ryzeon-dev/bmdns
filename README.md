@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.0.0-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.0.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.1.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -68,7 +68,7 @@ The installation script
 ### Debian
 Run the following line in a dedicated directory
 ```commandline
-wget https://github.com/ryzeon-dev/bmdns/releases/download/v5.0.0/bmdns_5.0.0_amd64.deb && sudo dpkg -i ./bmdns_5.0.0_amd64.deb && sudo systemctl enable bmdns && sudo systemctl start bmdns
+wget https://github.com/ryzeon-dev/bmdns/releases/download/v5.1.0/bmdns_5.1.0_amd64.deb && sudo dpkg -i ./bmdns_5.1.0_amd64.deb
 ```
 
 Warning: the executables were compiled and packed into .deb on Debian 13, the package might not work on older Debian releases (because of glibc versions)  
@@ -247,6 +247,20 @@ static:
   _vlan0:
     __vlankmask: 192.168.0.0/24
     __block-external: yes
+```
+
+#### VLAN exclusion
+BMDNS vlans require a "vlanmask", which includes all the possible IP addresses in that network. However, it is possible 
+to exclude certain addresses using the `__exclude` field.
+
+e.g. You have a BMDNS vlan configured on `10.0.0.0/16` and you want to block IP addresses `10.0.2.4` and `10.0.4.8`
+```yaml
+static:
+  _vlan0:
+    __vlanmask: 10.0.0.0/16
+    __exclude: 
+      - 10.0.2.4
+      - 10.0.4.8
 ```
 
 ### Root Servers
