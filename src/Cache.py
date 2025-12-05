@@ -17,6 +17,7 @@ class Cache:
     def append(self, bytes):
         if not bytes:
             return
+
         try:
             response = DnsResponse(bytes)
         except:
@@ -34,7 +35,7 @@ class Cache:
 
     def getForId(self, qname, id):
         self.__mutex.acquire()
-        response: DnsResponse = self.__cache.get(qname)
+        response = self.__cache.get(qname)
         self.__mutex.release()
 
         if response is None:

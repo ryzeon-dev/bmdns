@@ -9,6 +9,10 @@ class DnsResponse:
     def __init__(self, bytes):
         self.fullBytes = bytes
         self.header = DnsHeader.fromBytes(bytes)
+
+        if self.header.answersCount == 0:
+            raise Exception('Response contains no answer')
+
         self.question = DnsQuestion.fromBytes(bytes[self.header.byteSize:])
         self.firstRecord = DnsRecord.fromBytes(bytes[self.header.byteSize + self.question.byteSize:])
 
