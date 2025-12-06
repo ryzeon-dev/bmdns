@@ -1,0 +1,69 @@
+# configuration is explained in the README.md file at
+# https://github.com/ryzeon-dev/bmdns
+
+host: 0.0.0.0
+port: 53
+
+logging: yes
+persistent-log: yes
+color-log: yes
+
+static:
+  router:
+    A: 192.168.0.1
+    AAAA: fe80:deeb::beef
+
+  server1:
+    A: 192.168.0.2
+    CNAME: server1.net.lan
+
+  server2:
+    A: 192.168.0.4
+    CNAME: server2.net.lan
+
+  server3:
+    A: 192.168.0.8
+    CNAME: server3.net.lan
+
+  '*.server3.lan': 192.168.0.8
+
+  access-point:
+    A: 192.168.0.254
+    AAAA: fe80:beef::deeb
+
+  server1.net.lan: 192.168.0.2
+  server2.net.lan: 192.168.0.4
+  server3.net.lan: 192.168.0.8
+
+  _vlan0:
+    __vlanmask: 10.0.0.0/16
+    __exclude:
+      - 10.0.0.71
+      - 10.0.55.47
+      - 10.0.200.96
+    __block-external: yes
+
+    server1:
+      A: 10.0.0.2
+      CNAME: server1.net.lan
+
+    server2:
+      A: 10.0.2.4
+      CNAME: server2.net.lan
+
+    server3:
+      A: 10.0.4.8
+      CNAME: server3.net.lan
+
+    '*.server3.lan': 10.0.4.8
+
+    server1.net.lan: 10.0.0.2
+    server2.net.lan: 10.0.2.4
+    server3.net.lan: 10.0.4.8
+
+root-servers:
+  - 94.140.14.14
+  - 94.140.15.15
+
+blocklists:
+  - /opt/adlist.txt

@@ -154,6 +154,8 @@ blocklists:
   -
 ```
 
+A complete configuration file example can be found [here](https://github.com/ryzeon-dev/bmdns/example/conf.yaml)
+
 ### Static remaps
 To add a personalized dns resolution, add the hostname with its ip address to `static` section.
 
