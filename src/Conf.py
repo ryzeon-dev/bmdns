@@ -5,6 +5,7 @@ import re
 
 from StaticVlan import StaticVlan
 from StaticRemap import StaticRemap
+from qtype import QTYPE
 from utils import logFatalError
 from validation import validateIPv4
 
@@ -168,6 +169,10 @@ class Conf:
         for wildcard in self.wildcardRemaps:
             if remap := wildcard.has(target, qtype):
                 return remap
+
+        # blocklist only supports A requests
+        if qtype != QTYPE.A:
+            return None
 
         for pattern, ip in self.blocklist.items():
             if re.match(pattern, target):

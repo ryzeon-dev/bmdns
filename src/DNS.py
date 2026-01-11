@@ -100,7 +100,7 @@ class DNS:
 
                 # searches for the domain and qtype in the vlan configuration
                 if (target := staticVlan.search(qname, qtype)):
-                    self.logger.log(f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{target}" to {fmtClientAddress} asking for {qname} [{qtype}]')
+                    self.logger.log(f'{strRequestId} | giving static vlan `{staticVlan.name}` answer "{target}" to {fmtClientAddress} asking for {qname} [{QTYPE.codeToName(qtype)}]')
                     responseBytes = assembleResponse(target, qtype)
 
                     try:

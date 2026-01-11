@@ -1,6 +1,6 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.1.0-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.1.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.1.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.1.1-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
@@ -68,7 +68,7 @@ The installation script
 ### Debian
 Run the following line in a dedicated directory
 ```commandline
-wget https://github.com/ryzeon-dev/bmdns/releases/download/v5.1.0/bmdns_5.1.0_amd64.deb && sudo dpkg -i ./bmdns_5.1.0_amd64.deb
+wget https://github.com/ryzeon-dev/bmdns/releases/download/v5.1.1/bmdns_5.1.1_amd64.deb && sudo dpkg -i ./bmdns_5.1.1_amd64.deb
 ```
 
 Warning: the executables were compiled and packed into .deb on Debian 13, the package might not work on older Debian releases (because of glibc versions)  
