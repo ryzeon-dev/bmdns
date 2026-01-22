@@ -10,7 +10,7 @@ def u16ToBytes(value):
     return struct.pack(U16, value)
 
 def bytesToU32(bytes):
-    return struct.unpack(U16, bytes[0:4])[0]
+    return struct.unpack(U32, bytes[0:4])[0]
 
 def u32ToBytes(value):
     return struct.pack(U32, value)

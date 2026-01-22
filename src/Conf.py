@@ -7,7 +7,7 @@ from StaticVlan import StaticVlan
 from StaticRemap import StaticRemap
 from qtype import QTYPE
 from utils import logFatalError
-from validation import validateIPv4
+from validation import validateIPv4, validateTlsIPv4, validateDomainName, validateTlsDomainName
 
 
 class Conf:
@@ -66,9 +66,7 @@ class Conf:
             logFatalError(f'Fatal: `root-servers` field must contain a list of strings')
             sys.exit(1)
 
-        if any(map(lambda e: not validateIPv4(e), self.rootServers)):
-            logFatalError(f'Fatal: `root-servers` field must contain a list of valid IPv4 addresses')
-            sys.exit(1)
+        self.__validateRootServers()
 
         self.blocklists = yconf.get('blocklists')
         if self.blocklists is None:
@@ -149,6 +147,17 @@ class Conf:
             hostnameRegex = r'{}'.format(hostname.replace('.', r'\.').replace('*', '.*'))
 
             self.blocklist[hostnameRegex] = ip
+
+    def __validateRootServers(self):
+        for server in self.rootServers:
+            ipv4Validation = validateIPv4(server)
+            tlsIpv4Validation = validateTlsIPv4(server)
+            domainNameValidation = validateDomainName(server)
+            tlsDomainNameValidation = validateTlsDomainName(server)
+
+            if not any([ipv4Validation, tlsIpv4Validation, domainNameValidation, tlsDomainNameValidation]):
+                logFatalError(f'Fatal: `{server}` is not a valid root-server')
+                sys.exit(1)
 
     def search(self, target: str, qtype: int) -> str|None:
         remap = self.remaps.get(target)

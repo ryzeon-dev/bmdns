@@ -253,6 +253,8 @@ static:
 root-servers:
   - 1.1.1.1
   - 1.0.0.1
+  - tls://1.1.1.1
+  - tls://dns.cloudflare.com
 
 blocklists:
   -'''
@@ -269,7 +271,7 @@ blocklists:
         self.assertEqual(conf.port, 53)
         self.assertEqual(conf.logging, True)
         self.assertEqual(conf.persistentLog, False)
-        self.assertEqual(conf.rootServers, ['1.1.1.1', '1.0.0.1'])
+        self.assertEqual(conf.rootServers, ['1.1.1.1', '1.0.0.1', 'tls://1.1.1.1', 'tls://dns.cloudflare.com'])
         self.assertEqual(conf.search('me.local', QTYPE.A), '0.0.0.0')
         self.assertEqual(conf.search('qname', QTYPE.TXT), 'txt record')
         self.assertIsNone(conf.search('name', QTYPE.CNAME))
@@ -284,6 +286,12 @@ class ValidationTests(unittest.TestCase):
 
     def test_ipv4_fail(self):
         self.assertFalse(validateIPv4('10.2.0.258'))
+
+    def test_tls_ipv4_success(self):
+        self.assertTrue(validateTlsIPv4('tls://1.1.1.1'))
+
+    def test_tls_ipv4_fail(self):
+        self.assertFalse(validateTlsIPv4('tsl://1.1.1.1'))
 
     def test_ipv6_success(self):
         self.assertTrue(validateIPv6('fe80:beef::deeb'))
@@ -302,6 +310,12 @@ class ValidationTests(unittest.TestCase):
 
     def test_cname_fail(self):
         self.assertFalse(validateDomainName('wrong_domain.name.a'))
+
+    def test_tls_domain_name_success(self):
+        self.assertTrue(validateTlsDomainName('tls://dns.cloudflare.com'))
+
+    def test_tls_domain_name_fail(self):
+        self.assertFalse(validateTlsDomainName('tsl://dns.cloudflare.com'))
 
     def test_vlanmask_success(self):
         self.assertTrue(validateVlanMask('192.168.0.1/24'))

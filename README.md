@@ -1,13 +1,22 @@
 <p align="center">
-<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.1.1-16a085">
-<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.1.1-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/dev--version-v5.2.0-16a085">
+<img alt="Version Badge" src="https://img.shields.io/badge/release-v5.2.0-16a085">
 <img alt="Docker Image Version" src="https://img.shields.io/docker/v/ryzeondev/bmdns?label=docker-version&color=16a085">
 <img alt="License Badge" src="https://img.shields.io/github/license/ryzeon-dev/bmdns?color=16a085">
 <img alt="Language Badge" src="https://img.shields.io/badge/python3-16a085?logo=python&logoColor=16a085&labelColor=5a5a5a">
 </p>
 
 # Bare-Metal DNS
-Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a bare metal DNS server
+A lightweight DNS server for homelabs: local records, ad-blocking, VLAN segmentation, and DoT support. No database, no web UI, just DNS.
+
+## Why BMDNS?
+BMDNS is a self-hosted DNS server for homelabs and small networks. It gives you local DNS resolution, ad-blocking via blocklists, and VLAN segmentation—without the overhead of a web UI or database.
+
+- **Simple configuration** — Single YAML file
+- **VLAN-aware** — Serve different records to different networks
+- **Blocklist support** — Block ads and trackers at the DNS level
+- **DoT support** — Encrypted upstream queries to protect your privacy
+- **Cross-platform** — Linux, Windows, Docker
 
 # Index
 - [Supported OS](#supported-os) 
@@ -28,6 +37,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
   - [Static Remaps](#static-remaps)
   - [VLANs](#vlans)
   - [Root Servers](#root-servers)
+    - [DoT Root Servers](#dot-root-servers)
   - [Blocklists](#blocklists)
 - [Cascading Search](#cascading-search)
 - [Log](#log)
@@ -38,7 +48,7 @@ Lightweight DNS written in Python. No fancy UI. No extensive analysis. Just a ba
 The software officially supports GNU/Linux and Windows. 
 
 It should work on FreeBSD and MacOS systems, but it is untested.  
-The `install`/`update`/`uninstall` scripts are specifically written for GNU/Linux and Windows, any attempt of running them in other OS may lead to errors and unexpected behaviour. 
+The `install`/`update`/`uninstall` scripts are specifically written for GNU/Linux and Windows, any attempt of running them in other OS may lead to errors and unexpected behavior. 
 
 ## OS requirements
 Compilation requires `python3 python3-venv python3-pip` packages to be installed. Install them using your OS's package manager
@@ -170,7 +180,7 @@ static:
 
 Wildcard static resolution is supported, and only requires the user to add a "*" in the position associated with the wildcard.
 
-e.g. you have a server named `my-server` with ip address `192.168.0.2` wich provides multiple web services, \ 
+e.g. you have a server named `my-server` with ip address `192.168.0.2` wich provides multiple web services, \
 each one identified as a subdomain of the server name itself
 ```yaml
 static:
@@ -274,6 +284,17 @@ e.g. you want to use AdGuard as DNS root server
 root-servers:
   - 94.140.14.14
   - 94.140.15.15    
+```
+
+#### DoT Root Servers
+
+BMDNS supports wrapping request in DoT, so it is possible to use tls root servers
+
+e.g. AdGuard and Cloudflare tls root servers
+```yaml
+root-servers:
+  - tls://dns.adguard-dns.com
+  - tls://1.1.1.1 
 ```
 
 ### Blocklists

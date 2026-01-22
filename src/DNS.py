@@ -1,6 +1,7 @@
 import random
 import socket as sk
 from _thread import start_new_thread
+import ssl
 
 from Cache import Cache
 from DnsHeader import DnsHeader
@@ -136,6 +137,7 @@ class DNS:
 
             return
 
+        print(self.caches)
         # searches in cache
         if qtype in self.qtypes:
             if responseBytes := self.caches[qtype].getForId(qname, requestId):
@@ -151,7 +153,12 @@ class DNS:
 
         # asks configured root servers
         for server in self.conf.rootServers:
-            responseBytes = self.askRootServer(server, bytes)
+            if server.startswith('tls://'):
+                print('tls server detected')
+                responseBytes = self.askTlsRootServer(server, bytes)
+
+            else:
+                responseBytes = self.askRootServer(server, bytes)
 
             if responseBytes is None:
                 continue
@@ -165,6 +172,7 @@ class DNS:
             except:
                 self.logger.error(f'{strRequestId} | Error: cannot send response to {fmtClientAddress}')
 
+            print(f'{qtype = } ; {qtype in self.qtypes = }')
             if qtype in self.qtypes:
                 self.caches[qtype].append(responseBytes)
 
@@ -190,5 +198,25 @@ class DNS:
 
         except:
             return None
+
+        return responseBytes
+
+    def askTlsRootServer(self, server, questionBytes):
+        sslContext = ssl.create_default_context()
+        targetServer = server.removeprefix('tls://')
+        print(f'{targetServer = }')
+
+        try:
+            with sk.create_connection((targetServer, STD_DoT_PORT), timeout=5) as sock:
+                with sslContext.wrap_socket(sock, server_hostname=targetServer) as tlsSocket:
+                    querySize = len(questionBytes).to_bytes(2, 'big')
+                    tlsSocket.sendall(querySize + questionBytes)
+
+                    responseLength = int.from_bytes(tlsSocket.recv(2), 'big')
+                    responseBytes = tlsSocket.recv(responseLength)
+
+        except Exception as e:
+            print(e)
+            return
 
         return responseBytes
